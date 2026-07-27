@@ -1,0 +1,107 @@
+# OTID-book — 最佳化理論與反向設計課程書（Jupyter Book 2 / MyST 引擎）
+# 規格：CLAUDE.md（§5 起始骨架）；風格與部署仿 jhihsheng/eeqt30001（style.css＋deploy.yml）
+# Part I 單元制（unit01–08，無日期）；Part II 為 jhihsheng/OTID computing_lab/ 之鏡像（sync_labs.sh）
+version: 1
+project:
+  title: 最佳化理論與反向設計 Optimization Theory and Inverse Design
+  authors:
+    - name: Jhih-Sheng Wu 吳致盛
+  github: https://github.com/jhihsheng/OTID-book
+  numbering:
+    headings: true
+  exclude:
+    - CLAUDE.md
+  toc:
+    - file: intro.md
+    - file: syllabus.md
+    - file: resources.md
+    - file: setup.md
+    - title: Part I — Theory（單元制）
+      children:
+        - file: unit01/index.md
+          children:
+            - file: unit01/sec1.md
+            - file: unit01/sec2.md
+            - file: unit01/sec3.md
+        - file: unit02/index.md
+          children:
+            - file: unit02/sec1.md
+            - file: unit02/sec2.md
+            - file: unit02/sec3.md
+        - file: unit03/index.md
+          children:
+            - file: unit03/sec1.md
+            - file: unit03/sec2.md
+            - file: unit03/sec3.md
+            - file: unit03/sec4.md
+        - file: unit04/index.md
+          children:
+            - file: unit04/sec1.md
+            - file: unit04/sec2.md
+            - file: unit04/sec3.md
+        - file: unit05/index.md
+          children:
+            - file: unit05/sec1.md
+            - file: unit05/sec2.md
+            - file: unit05/sec3.md
+            - file: unit05/sec4.md
+        - file: unit06/index.md
+          children:
+            - file: unit06/sec1.md
+            - file: unit06/sec2.md
+            - file: unit06/sec3.md
+        - file: unit07/index.md
+          children:
+            - file: unit07/sec1.md
+            - file: unit07/sec2.md
+            - file: unit07/sec3.md
+        - file: unit08/index.md
+          children:
+            - file: unit08/sec1.md
+            - file: unit08/sec2.md
+            - file: unit08/sec3.md
+    - title: Part II — Hands-On Labs & Mini-Projects
+      children:
+        - file: labs/index.md
+        - file: labs/env.md
+          children:
+            - file: computing_lab/00_connection_ssh.md
+            - file: computing_lab/00_OTID_lab1.ipynb
+        - file: labs/python.md
+          children:
+            - file: computing_lab/01_OTID_plot.ipynb
+        - file: labs/opti.md
+          children:
+            - file: computing_lab/02_OTID_opti_tutorial_1.ipynb
+            - file: computing_lab/03_OTID_opti_tutorial_2.ipynb
+        - file: labs/tmm.md
+          children:
+            - file: computing_lab/04_OTID_transmission_TMM.ipynb
+        - file: labs/meep.md
+          children:
+            - file: computing_lab/05_OTID_meep_tutorial_1.ipynb
+            - file: computing_lab/06_OTID_meep_lab_1.ipynb
+        - file: labs/eot.md
+          children:
+            - file: computing_lab/07_OTID_Trans_Ag_film.ipynb
+        - file: labs/adjoint.md
+          children:
+            - file: computing_lab/08_OTID_meep_adjoint.ipynb
+            - file: computing_lab/09_OTID_meep_adjoint_multi_freq.ipynb
+              title: Multi-Frequency Adjoint Optimization with Meep
+        - file: labs/qa.md
+          children:
+            - file: computing_lab/QA_lab_mini_project/quantum_annealing_lab_FULL.ipynb
+            - file: computing_lab/QA_lab_mini_project/binary_OPA_SA_QA.ipynb
+    - file: project.md
+    - file: notation.md
+    - file: question_bank.md
+site:
+  template: book-theme
+  options:
+    folders: true
+    favicon: JLW_icon.png          # 分頁 icon（老師個人 icon，同 eeqt30001）
+    logo_text: 最佳化理論與反向設計   # 左上品牌字（取代預設 Made with MyST）
+    style: style.css               # 仿 em 配色與字型（自 eeqt30001 原樣複製）
+  parts:
+    footer: footer.md              # © 2026 頁尾

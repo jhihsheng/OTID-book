@@ -1,0 +1,49 @@
+# push main → MyST（Jupyter Book 2 引擎）：先建整本課程書 PDF（typst）、再建靜態站 → 部署 GitHub Pages
+# typst 釘 0.13.1：mystmd 產出的符號名（planck.reduce、angle.l 等）在 typst 0.15 已移除
+name: deploy-book
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  BASE_URL: /${{ github.event.repository.name }}   # 專案站前綴 /OTID-book
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build-deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install MyST
+        run: npm install -g mystmd
+      - name: Install Typst 0.13.1 + CJK fonts   # 整本書 PDF export 用；中文需 Noto CJK
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq fonts-noto-cjk
+          curl -fsSL https://github.com/typst/typst/releases/download/v0.13.1/typst-x86_64-unknown-linux-musl.tar.xz \
+            | tar -xJ --strip-components=1 -C /usr/local/bin --wildcards '*/typst'
+          typst --version
+      - name: Build whole-course PDF book (typst)
+        run: myst build --all
+      - name: Build static HTML
+        run: myst build --html
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _build/html
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

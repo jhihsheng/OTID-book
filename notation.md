@@ -55,3 +55,7 @@
 | $\boldsymbol{\lambda}$ | adjoint 變數（$\boldsymbol{A}^{\!\top}\boldsymbol{\lambda}=(\partial J/\partial\boldsymbol{x})^{\!\top}$） | [U7 sec1](unit07/sec1.md) |
 | $\tilde{\rho}$，$\bar{\rho}$ | 濾波後／投影後密度 | [U7 sec3](unit07/sec3.md) |
 | $R$；$\beta$，$\eta$ | 濾波半徑（最小特徵）；投影銳度與門檻 | [U7 sec3](unit07/sec3.md) |
+| $\dot{v}$；$\bar{v}$ | forward-mode 切向量（JVP）；reverse-mode adjoint（VJP） | [U8 sec1](unit08/sec1.md) |
+| $\epsilon$（$\epsilon^2=0$） | dual number 之冪零元 | [U8 sec1](unit08/sec1.md) |
+| $\varepsilon_{\text{mach}}\approx2.2\times10^{-16}$ | 機器精度 machine epsilon（float64） | [U8 sec1](unit08/sec1.md) |
+| $D_h f$ | 步長 $h$ 之有限差分 | [U8 sec1](unit08/sec1.md) |

@@ -46,6 +46,11 @@ downloads:
     title: 整本課程書 PDF（Part I 理論篇）
 ---
 
+```{image} assets/cover.svg
+:alt: 課程封面：Q 版吳致盛老師在 2D 最佳化地形的全域最大值插旗（旗上寫 ∇f = 0），山坡上有迭代點、模擬退火跳躍與量子穿隧箭頭，左側為 TMM 濾波器、拓撲最佳化、Ising 自旋與神經網路圖示
+:width: 100%
+```
+
 # 最佳化理論與反向設計 Optimization Theory and Inverse Design
 
 NYCU 光電碩選修（114-2，當期課號 535417，永久課號 EEEO30135）｜授課教師：吳致盛 Jhih-Sheng Wu

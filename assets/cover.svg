@@ -1,0 +1,215 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 640" role="img" aria-labelledby="coverTitle">
+  <title id="coverTitle">最佳化理論與反向設計 — 課程封面：Q 版教授在最佳化地形的全域最大值插旗</title>
+  <!-- 封面設計說明：站內配色（象牙白 #fffcf2、桃紅 #ee4466、綠 #66cc94、lightsteelblue、深灰 #1e1e1e）
+       場景：2D landscape 找最大值（迭代點、SA 翻山、QA 穿隧、∇f 箭頭、等高線光環）＋反向設計圖示卡 -->
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fffcf2"/>
+      <stop offset="1" stop-color="#fbf4e2"/>
+    </linearGradient>
+    <linearGradient id="hill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#dce5f1"/>
+      <stop offset="1" stop-color="#9fb3cc"/>
+    </linearGradient>
+    <marker id="mDark" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 Z" fill="#4a5568"/>
+    </marker>
+    <marker id="mGreen" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 Z" fill="#66cc94"/>
+    </marker>
+    <marker id="mRose" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 Z" fill="#ee4466"/>
+    </marker>
+    <clipPath id="frame"><rect x="0" y="0" width="1600" height="640" rx="18"/></clipPath>
+    <style>
+      .kai   { font-family: 'DFKai-SB','BiauKai','Noto Serif CJK TC','Noto Serif TC',serif; }
+      .serif { font-family: Georgia,'Times New Roman',serif; }
+      .sans  { font-family: 'Helvetica Neue',Arial,'Noto Sans CJK TC','Noto Sans TC',sans-serif; }
+    </style>
+  </defs>
+
+  <g clip-path="url(#frame)">
+    <!-- 底：象牙白天空 -->
+    <rect x="0" y="0" width="1600" height="640" fill="url(#sky)"/>
+
+    <!-- 全域最大值上方的等高線光環（level sets 收斂到最佳點） -->
+    <g fill="none" stroke="#7a93b8">
+      <ellipse cx="1272" cy="128" rx="38"  ry="16" stroke-opacity="0.40" stroke-width="2"/>
+      <ellipse cx="1272" cy="128" rx="74"  ry="32" stroke-opacity="0.30" stroke-width="2"/>
+      <ellipse cx="1272" cy="128" rx="110" ry="48" stroke-opacity="0.22" stroke-width="2"/>
+      <ellipse cx="1272" cy="128" rx="146" ry="64" stroke-opacity="0.14" stroke-width="2"/>
+    </g>
+
+    <!-- 點綴星芒 -->
+    <g>
+      <path d="M 0 -9 L 2 -2 L 9 0 L 2 2 L 0 9 L -2 2 L -9 0 L -2 -2 Z" transform="translate(1060,84)"  fill="#ee4466" opacity="0.45"/>
+      <path d="M 0 -9 L 2 -2 L 9 0 L 2 2 L 0 9 L -2 2 L -9 0 L -2 -2 Z" transform="translate(1445,150)" fill="#66cc94" opacity="0.40"/>
+      <path d="M 0 -8 L 2 -2 L 8 0 L 2 2 L 0 8 L -2 2 L -8 0 L -2 -2 Z" transform="translate(640,96)"   fill="#7a93b8" opacity="0.35"/>
+    </g>
+
+    <!-- 2D 最佳化地形：左緩丘、中局部極大、右全域最大 -->
+    <path d="M 0,516 C 70,502 150,486 230,492 C 310,498 360,516 440,512
+             C 520,508 560,472 630,466 C 690,461 730,438 785,408
+             C 830,383 855,344 882,340 C 912,344 950,406 995,446
+             C 1015,462 1040,462 1068,436 C 1108,398 1160,300 1205,240
+             C 1228,212 1248,206 1272,206 C 1292,206 1305,214 1322,246
+             C 1352,302 1390,392 1438,436 C 1480,470 1540,466 1600,448
+             L 1600,640 L 0,640 Z"
+          fill="url(#hill)" stroke="#7a93b8" stroke-width="3"/>
+
+    <!-- 量子穿隧（QA）：直接穿過局部極大的山丘 -->
+    <path d="M 752,428 L 975,428" fill="none" stroke="#ee4466" stroke-width="3"
+          stroke-dasharray="3 7" stroke-linecap="round" marker-end="url(#mRose)"/>
+    <text x="855" y="450" class="sans" font-size="14" font-weight="bold" fill="#b03052">QA</text>
+
+    <!-- 迭代軌跡：x(0) 出發，沿坡上爬 -->
+    <path d="M 660,452 C 700,446 745,428 790,404 C 830,384 858,362 880,342"
+          fill="none" stroke="#4a5568" stroke-width="2.5" stroke-dasharray="5 6" stroke-linecap="round"/>
+    <!-- 模擬退火（SA）：躍過局部極大 -->
+    <path d="M 885,330 Q 1002,220 1120,346" fill="none" stroke="#66cc94" stroke-width="3"
+          stroke-dasharray="6 7" stroke-linecap="round" marker-end="url(#mGreen)"/>
+    <text x="1002" y="226" text-anchor="middle" class="sans" font-size="14" font-weight="bold" fill="#37876a">SA</text>
+    <!-- 落地後續爬向全域最大 -->
+    <path d="M 1121,350 C 1150,315 1180,265 1214,230"
+          fill="none" stroke="#4a5568" stroke-width="2.5" stroke-dasharray="5 6" stroke-linecap="round"/>
+
+    <!-- 梯度方向 -->
+    <line x1="826" y1="368" x2="862" y2="340" stroke="#4a5568" stroke-width="2.5" marker-end="url(#mDark)"/>
+    <text x="868" y="336" class="serif" font-size="16" font-style="italic" fill="#4a5568">&#8711;f</text>
+
+    <!-- 迭代點 -->
+    <g fill="#ee4466" stroke="#fffcf2" stroke-width="1.5">
+      <circle cx="660"  cy="452" r="5"/>
+      <circle cx="723"  cy="435" r="5"/>
+      <circle cx="790"  cy="404" r="5"/>
+      <circle cx="842"  cy="373" r="5"/>
+      <circle cx="880"  cy="342" r="5"/>
+      <circle cx="1121" cy="350" r="5"/>
+      <circle cx="1170" cy="290" r="5"/>
+      <circle cx="1214" cy="230" r="5"/>
+    </g>
+    <text x="626" y="442" class="serif" font-size="15" font-style="italic" fill="#6b7280">x<tspan dy="-7" font-size="11">(0)</tspan></text>
+
+    <!-- 山頂旗幟：∇f = 0 -->
+    <ellipse cx="1305" cy="222" rx="9" ry="4" fill="#7a93b8"/>
+    <line x1="1305" y1="224" x2="1305" y2="62" stroke="#4a5568" stroke-width="4" stroke-linecap="round"/>
+    <path d="M 1308,64 C 1336,58 1362,68 1390,62 L 1390,104 C 1362,110 1336,100 1308,106 Z" fill="#ee4466"/>
+    <text x="1349" y="92" text-anchor="middle" class="serif" font-size="19" font-style="italic"
+          font-weight="bold" fill="#fffcf2">&#8711;f = 0</text>
+
+    <!-- Q 版教授（站上全域最大值） -->
+    <g>
+      <ellipse cx="1245" cy="214" rx="32" ry="6" fill="#1e1e1e" opacity="0.12"/>
+      <!-- 手臂（畫在身體後面，舉起歡呼；右手扶旗桿） -->
+      <line x1="1218" y1="155" x2="1194" y2="120" stroke="#26292e" stroke-width="9" stroke-linecap="round"/>
+      <line x1="1262" y1="155" x2="1296" y2="127" stroke="#26292e" stroke-width="9" stroke-linecap="round"/>
+      <circle cx="1192" cy="117" r="6" fill="#f8d5ae"/>
+      <circle cx="1300" cy="125" r="6" fill="#f8d5ae"/>
+      <!-- 腳與鞋 -->
+      <rect x="1224" y="184" width="10" height="26" rx="4" fill="#2d3138"/>
+      <rect x="1246" y="184" width="10" height="26" rx="4" fill="#2d3138"/>
+      <ellipse cx="1229" cy="212" rx="9" ry="5" fill="#1e1e1e"/>
+      <ellipse cx="1251" cy="212" rx="9" ry="5" fill="#1e1e1e"/>
+      <!-- 身體：深灰西裝＋象牙白襯衫 -->
+      <rect x="1212" y="146" width="56" height="44" rx="14" fill="#26292e"/>
+      <path d="M 1230,148 L 1240,164 L 1250,148 Z" fill="#fffcf2"/>
+      <!-- 脖子與頭 -->
+      <rect x="1235" y="126" width="10" height="16" fill="#f8d5ae"/>
+      <circle cx="1240" cy="99" r="36" fill="#f8d5ae"/>
+      <!-- 頭髮（瀏海）與鬢角 -->
+      <path d="M 1204,99 A 36 36 0 0 1 1276,99 C 1267,82 1259,88 1251,79 C 1243,88 1233,77 1225,85 C 1217,77 1210,89 1204,99 Z" fill="#1e1e1e"/>
+      <rect x="1201" y="97" width="7" height="17" rx="3" fill="#1e1e1e"/>
+      <rect x="1272" y="97" width="7" height="17" rx="3" fill="#1e1e1e"/>
+      <!-- 眉毛、眼鏡、眼睛 -->
+      <line x1="1216" y1="86" x2="1228" y2="84" stroke="#1e1e1e" stroke-width="2.4" stroke-linecap="round"/>
+      <line x1="1252" y1="84" x2="1264" y2="86" stroke="#1e1e1e" stroke-width="2.4" stroke-linecap="round"/>
+      <rect x="1212" y="92" width="21" height="15" rx="4" fill="#ffffff" fill-opacity="0.55" stroke="#1e1e1e" stroke-width="2.5"/>
+      <rect x="1247" y="92" width="21" height="15" rx="4" fill="#ffffff" fill-opacity="0.55" stroke="#1e1e1e" stroke-width="2.5"/>
+      <line x1="1233" y1="99" x2="1247" y2="99" stroke="#1e1e1e" stroke-width="2.5"/>
+      <circle cx="1222" cy="100" r="2.6" fill="#1e1e1e"/>
+      <circle cx="1257" cy="100" r="2.6" fill="#1e1e1e"/>
+      <!-- 微笑與腮紅 -->
+      <path d="M 1228,116 Q 1240,127 1252,116" fill="none" stroke="#1e1e1e" stroke-width="2.5" stroke-linecap="round"/>
+      <ellipse cx="1213" cy="111" rx="6" ry="3.5" fill="#ee4466" opacity="0.30"/>
+      <ellipse cx="1267" cy="111" rx="6" ry="3.5" fill="#ee4466" opacity="0.30"/>
+    </g>
+
+    <!-- 標題區 -->
+    <text x="63" y="155" class="kai" font-size="64" font-weight="700" fill="#aaaaaa" opacity="0.45">最佳化理論與反向設計</text>
+    <text x="60" y="152" class="kai" font-size="64" font-weight="700" fill="#1e1e1e">最佳化理論與反向設計</text>
+    <text x="60" y="200" class="serif" font-size="30" font-style="italic" fill="#52606d">Optimization Theory and Inverse Design</text>
+    <rect x="62" y="218" width="150" height="4" rx="2" fill="#ee4466"/>
+    <text x="60" y="250" class="sans" font-size="19" fill="#4a5568">NYCU 114-2&#12539;光電工程碩士班&#12539;EEEO30135&#12539;吳致盛 Jhih-Sheng Wu</text>
+    <text x="60" y="282" class="sans" font-size="17" fill="#8a8f98">梯度與非梯度&#12539;古典與量子——從最佳化理論到光學反向設計</text>
+
+    <!-- 反向設計圖示卡：TMM 濾波器｜拓撲最佳化｜量子退火｜神經網路 -->
+    <!-- 卡 1：多層膜濾波器（TMM） -->
+    <g transform="translate(60,380)">
+      <rect width="72" height="72" rx="12" fill="#fffdf6" stroke="#ddd8ca" stroke-width="1.5"/>
+      <line x1="36" y1="3" x2="36" y2="13" stroke="#4a5568" stroke-width="2.5" marker-end="url(#mDark)"/>
+      <rect x="10" y="16" width="52" height="6" fill="#7a93b8"/>
+      <rect x="10" y="25" width="52" height="6" fill="#cfdcee"/>
+      <rect x="10" y="34" width="52" height="6" fill="#7a93b8"/>
+      <rect x="10" y="43" width="52" height="6" fill="#cfdcee"/>
+      <rect x="10" y="52" width="52" height="6" fill="#7a93b8"/>
+      <line x1="36" y1="60" x2="36" y2="69" stroke="#4a5568" stroke-width="2.5" marker-end="url(#mDark)"/>
+    </g>
+    <!-- 卡 2：拓撲最佳化（waveguide bend） -->
+    <g transform="translate(152,380)">
+      <rect width="72" height="72" rx="12" fill="#26292e" stroke="#1e1e1e" stroke-width="1.5"/>
+      <rect x="4" y="30" width="12" height="12" fill="#66cc94"/>
+      <path d="M 6,36 q 3,-5 6,0 t 6,0" fill="none" stroke="#fffcf2" stroke-width="1.5" opacity="0.9"/>
+      <ellipse cx="34" cy="36" rx="9" ry="7" fill="#66cc94"/>
+      <path d="M 44,22 C 52,18 58,24 54,30 C 60,32 56,42 48,40 C 42,44 36,38 42,32 Z" fill="#66cc94"/>
+      <circle cx="26" cy="20" r="4.5" fill="#66cc94"/>
+      <circle cx="50" cy="52" r="5" fill="#66cc94"/>
+      <rect x="30" y="56" width="12" height="12" fill="#66cc94"/>
+    </g>
+    <!-- 卡 3：Ising 自旋（量子退火） -->
+    <g transform="translate(244,380)" stroke-linecap="round">
+      <rect width="72" height="72" rx="12" fill="#fffdf6" stroke="#ddd8ca" stroke-width="1.5"/>
+      <g stroke="#ee4466" stroke-width="2.2" fill="none">
+        <path d="M 18,22 L 18,10 M 14.5,15 L 18,10 L 21.5,15"/>
+        <path d="M 54,22 L 54,10 M 50.5,15 L 54,10 L 57.5,15"/>
+        <path d="M 36,40 L 36,28 M 32.5,33 L 36,28 L 39.5,33"/>
+        <path d="M 18,58 L 18,46 M 14.5,51 L 18,46 L 21.5,51"/>
+        <path d="M 54,58 L 54,46 M 50.5,51 L 54,46 L 57.5,51"/>
+      </g>
+      <g stroke="#7a93b8" stroke-width="2.2" fill="none">
+        <path d="M 36,10 L 36,22 M 32.5,17 L 36,22 L 39.5,17"/>
+        <path d="M 18,28 L 18,40 M 14.5,35 L 18,40 L 21.5,35"/>
+        <path d="M 54,28 L 54,40 M 50.5,35 L 54,40 L 57.5,35"/>
+        <path d="M 36,46 L 36,58 M 32.5,53 L 36,58 L 39.5,53"/>
+      </g>
+    </g>
+    <!-- 卡 4：神經網路 -->
+    <g transform="translate(336,380)">
+      <rect width="72" height="72" rx="12" fill="#fffdf6" stroke="#ddd8ca" stroke-width="1.5"/>
+      <g stroke="#c3c9d4" stroke-width="1">
+        <line x1="16" y1="20" x2="36" y2="14"/><line x1="16" y1="20" x2="36" y2="28"/><line x1="16" y1="20" x2="36" y2="42"/><line x1="16" y1="20" x2="36" y2="56"/>
+        <line x1="16" y1="36" x2="36" y2="14"/><line x1="16" y1="36" x2="36" y2="28"/><line x1="16" y1="36" x2="36" y2="42"/><line x1="16" y1="36" x2="36" y2="56"/>
+        <line x1="16" y1="52" x2="36" y2="14"/><line x1="16" y1="52" x2="36" y2="28"/><line x1="16" y1="52" x2="36" y2="42"/><line x1="16" y1="52" x2="36" y2="56"/>
+        <line x1="36" y1="14" x2="56" y2="26"/><line x1="36" y1="14" x2="56" y2="46"/>
+        <line x1="36" y1="28" x2="56" y2="26"/><line x1="36" y1="28" x2="56" y2="46"/>
+        <line x1="36" y1="42" x2="56" y2="26"/><line x1="36" y1="42" x2="56" y2="46"/>
+        <line x1="36" y1="56" x2="56" y2="26"/><line x1="36" y1="56" x2="56" y2="46"/>
+      </g>
+      <g fill="#4a5568">
+        <circle cx="16" cy="20" r="3.6"/><circle cx="16" cy="36" r="3.6"/><circle cx="16" cy="52" r="3.6"/>
+        <circle cx="36" cy="14" r="3.6"/><circle cx="36" cy="28" r="3.6"/><circle cx="36" cy="42" r="3.6"/><circle cx="36" cy="56" r="3.6"/>
+      </g>
+      <g fill="#ee4466">
+        <circle cx="56" cy="26" r="3.6"/><circle cx="56" cy="46" r="3.6"/>
+      </g>
+    </g>
+    <g class="sans" font-size="14" fill="#8a8f98" text-anchor="middle">
+      <text x="96"  y="471">TMM 濾波器</text>
+      <text x="188" y="471">拓撲最佳化</text>
+      <text x="280" y="471">量子退火</text>
+      <text x="372" y="471">神經網路</text>
+    </g>
+  </g>
+
+  <!-- 外框 -->
+  <rect x="1" y="1" width="1598" height="638" rx="18" fill="none" stroke="#ddd6c6" stroke-width="2"/>
+</svg>

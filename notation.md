@@ -46,3 +46,8 @@
 | $s_i\in\{-1,+1\}$，$x_i\in\{0,1\}$ | Ising 自旋與 QUBO 二元變數（$s=2x-1$） | [U5 sec4](unit05/sec4.md) |
 | $h_i$，$J_{ij}$ | Ising 局域場與耦合 | [U5 sec4](unit05/sec4.md) |
 | $A(s)$，$B(s)$；$\sigma^{x,z}_i$ | 退火時程之 driver／problem 幅度；Pauli 算符 | [U5 sec4](unit05/sec4.md) |
+| $\varepsilon(\boldsymbol{r})$ | 介電常數分布（結構） | [U6 sec1](unit06/sec1.md) |
+| $\boldsymbol{p}$ | 設計參數向量（$\boldsymbol{p}\mapsto\varepsilon(\boldsymbol{r})$） | [U6 sec1](unit06/sec1.md) |
+| $J(\boldsymbol{p})$ | figure of merit（FoM，設計目標函數） | [U6 sec1](unit06/sec1.md) |
+| $\phi(\boldsymbol{r})$ | level-set 函數（邊界＝$\phi=0$） | [U6 sec2](unit06/sec2.md) |
+| $\rho_i\in[0,1]$ | density-based TO 之像素密度 | [U6 sec2](unit06/sec2.md) |

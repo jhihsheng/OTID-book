@@ -13,7 +13,7 @@ A two-layer MLP as a computational graph. Forward（blue）: evaluate and cache 
 
 ## Backprop on a two-layer network, in full
 
-Take the two-layer regression network of the figure: $\boldsymbol{z}_1=\boldsymbol{W}_1\boldsymbol{x}+\boldsymbol{b}_1$, $\boldsymbol{h}=\sigma(\boldsymbol{z}_1)$, $\hat{y}=\boldsymbol{w}_2^{\!\top}\boldsymbol{h}+b_2$, $\ell=\tfrac12(\hat{y}-y)^2$. We want $\partial\ell/\partial$ everything. Work backwards with the chain rule（Unit 1）, defining at each stage the **error signal** $\delta=\partial\ell/\partial(\text{that stage's preactivation})$.
+Take the two-layer regression network of the figure: $\boldsymbol{z}_1=\boldsymbol{W}_1\boldsymbol{x}+\boldsymbol{b}_1$, $\boldsymbol{h}=\sigma(\boldsymbol{z}_1)$, $\hat{y}=\boldsymbol{w}_2^{\top}\boldsymbol{h}+b_2$, $\ell=\tfrac12(\hat{y}-y)^2$. We want $\partial\ell/\partial$ everything. Work backwards with the chain rule（Unit 1）, defining at each stage the **error signal** $\delta=\partial\ell/\partial(\text{that stage's preactivation})$.
 
 **Output stage.** $\delta_2=\partial\ell/\partial\hat{y}=\hat{y}-y$. Since $\hat{y}$ is linear in $\boldsymbol{w}_2$ and $b_2$:
 
@@ -29,7 +29,7 @@ $$
 \boldsymbol{\delta}_1=\frac{\partial\ell}{\partial\boldsymbol{z}_1}
 =\bigl(\delta_2\,\boldsymbol{w}_2\bigr)\odot\sigma'(\boldsymbol{z}_1),
 \qquad\text{whence}\qquad
-\frac{\partial\ell}{\partial\boldsymbol{W}_1}=\boldsymbol{\delta}_1\,\boldsymbol{x}^{\!\top},
+\frac{\partial\ell}{\partial\boldsymbol{W}_1}=\boldsymbol{\delta}_1\,\boldsymbol{x}^{\top},
 \quad
 \frac{\partial\ell}{\partial\boldsymbol{b}_1}=\boldsymbol{\delta}_1 .
 $$ (eq-u4-bp1)
@@ -38,7 +38,7 @@ That is the whole algorithm — **backpropagation**（C&Z Ch. 13）is the chain 
 
 ## Why depth is hard: vanishing and exploding gradients
 
-Backprop through $L$ layers multiplies $L$ Jacobians: schematically, the error signal at layer $l$ is $\boldsymbol{\delta}_l\sim\bigl(\prod_{j>l}\boldsymbol{W}_j^{\!\top}\operatorname{diag}\sigma'(\boldsymbol{z}_j)\bigr)\boldsymbol{\delta}_L$. A product of $L$ factors each of typical size $\gamma$ scales like $\gamma^{L}$: for $\gamma<1$ the signal **vanishes** exponentially（early layers stop learning）; for $\gamma>1$ it **explodes**（training blows up）. Sigmoid networks vanish almost by decree — $\sigma'\le\tfrac14$ — which is the honest reason deep learning stalled for two decades. Three modern repairs:
+Backprop through $L$ layers multiplies $L$ Jacobians: schematically, the error signal at layer $l$ is $\boldsymbol{\delta}_l\sim\bigl(\prod_{j>l}\boldsymbol{W}_j^{\top}\operatorname{diag}\sigma'(\boldsymbol{z}_j)\bigr)\boldsymbol{\delta}_L$. A product of $L$ factors each of typical size $\gamma$ scales like $\gamma^{L}$: for $\gamma<1$ the signal **vanishes** exponentially（early layers stop learning）; for $\gamma>1$ it **explodes**（training blows up）. Sigmoid networks vanish almost by decree — $\sigma'\le\tfrac14$ — which is the honest reason deep learning stalled for two decades. Three modern repairs:
 
 **ReLU**（sec 1）passes slope exactly $1$ on its active half, removing the systematic $\le\tfrac14$ shrinkage.
 

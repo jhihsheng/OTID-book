@@ -57,8 +57,8 @@ The classic updates（all satisfy {eq}`eq-u3-secant`; formulas as in C&Z Ch. 11,
 
 $$
 \boldsymbol{H}_{k+1}=\boldsymbol{H}_k+
-\frac{(\Delta\boldsymbol{x}-\boldsymbol{H}_k\Delta\boldsymbol{g})(\Delta\boldsymbol{x}-\boldsymbol{H}_k\Delta\boldsymbol{g})^{\!\top}}
-{(\Delta\boldsymbol{x}-\boldsymbol{H}_k\Delta\boldsymbol{g})^{\!\top}\Delta\boldsymbol{g}}
+\frac{(\Delta\boldsymbol{x}-\boldsymbol{H}_k\Delta\boldsymbol{g})(\Delta\boldsymbol{x}-\boldsymbol{H}_k\Delta\boldsymbol{g})^{\top}}
+{(\Delta\boldsymbol{x}-\boldsymbol{H}_k\Delta\boldsymbol{g})^{\top}\Delta\boldsymbol{g}}
 $$
 
 — minimal and symmetric, but the denominator can vanish or flip sign, wrecking positive definiteness.
@@ -67,20 +67,20 @@ $$
 
 $$
 \boldsymbol{H}_{k+1}=\boldsymbol{H}_k
-+\frac{\Delta\boldsymbol{x}\,\Delta\boldsymbol{x}^{\!\top}}{\Delta\boldsymbol{x}^{\!\top}\Delta\boldsymbol{g}}
--\frac{\boldsymbol{H}_k\Delta\boldsymbol{g}\,(\boldsymbol{H}_k\Delta\boldsymbol{g})^{\!\top}}{\Delta\boldsymbol{g}^{\!\top}\boldsymbol{H}_k\Delta\boldsymbol{g}} .
++\frac{\Delta\boldsymbol{x}\,\Delta\boldsymbol{x}^{\top}}{\Delta\boldsymbol{x}^{\top}\Delta\boldsymbol{g}}
+-\frac{\boldsymbol{H}_k\Delta\boldsymbol{g}\,(\boldsymbol{H}_k\Delta\boldsymbol{g})^{\top}}{\Delta\boldsymbol{g}^{\top}\boldsymbol{H}_k\Delta\boldsymbol{g}} .
 $$ (eq-u3-dfp)
 
 **BFGS（rank two, the workhorse）:**
 
 $$
 \boldsymbol{H}_{k+1}=\boldsymbol{H}_k
-+\Bigl(1+\frac{\Delta\boldsymbol{g}^{\!\top}\boldsymbol{H}_k\Delta\boldsymbol{g}}{\Delta\boldsymbol{g}^{\!\top}\Delta\boldsymbol{x}}\Bigr)
-\frac{\Delta\boldsymbol{x}\,\Delta\boldsymbol{x}^{\!\top}}{\Delta\boldsymbol{x}^{\!\top}\Delta\boldsymbol{g}}
--\frac{\Delta\boldsymbol{x}\,\Delta\boldsymbol{g}^{\!\top}\boldsymbol{H}_k+\boldsymbol{H}_k\Delta\boldsymbol{g}\,\Delta\boldsymbol{x}^{\!\top}}{\Delta\boldsymbol{g}^{\!\top}\Delta\boldsymbol{x}} .
++\Bigl(1+\frac{\Delta\boldsymbol{g}^{\top}\boldsymbol{H}_k\Delta\boldsymbol{g}}{\Delta\boldsymbol{g}^{\top}\Delta\boldsymbol{x}}\Bigr)
+\frac{\Delta\boldsymbol{x}\,\Delta\boldsymbol{x}^{\top}}{\Delta\boldsymbol{x}^{\top}\Delta\boldsymbol{g}}
+-\frac{\Delta\boldsymbol{x}\,\Delta\boldsymbol{g}^{\top}\boldsymbol{H}_k+\boldsymbol{H}_k\Delta\boldsymbol{g}\,\Delta\boldsymbol{x}^{\top}}{\Delta\boldsymbol{g}^{\top}\Delta\boldsymbol{x}} .
 $$ (eq-u3-bfgs)
 
-Both rank-two updates {eq}`eq-u3-dfp`–{eq}`eq-u3-bfgs` **preserve positive definiteness** whenever $\Delta\boldsymbol{g}^{\!\top}\Delta\boldsymbol{x}>0$ — a condition a proper line search guarantees — so every direction $-\boldsymbol{H}_k\boldsymbol{g}^{(k)}$ is a certified descent direction. On quadratics with exact line searches both reach the exact solution in $n$ steps（they secretly generate conjugate directions）; on general problems both converge superlinearly, and decades of practice crowned **BFGS** the default: it self-corrects bad Hessian information where DFP lets it linger. When even storing the $n\times n$ matrix $\boldsymbol{H}$ is too much, **L-BFGS** keeps only the last $m\approx5$–$20$ pairs $(\Delta\boldsymbol{x},\Delta\boldsymbol{g})$ and applies $\boldsymbol{H}_k$ implicitly — this is the `L-BFGS-B` of scipy and the workhorse inside `nlopt` that will drive the adjoint-based photonics designs of Unit 7.
+Both rank-two updates {eq}`eq-u3-dfp`–{eq}`eq-u3-bfgs` **preserve positive definiteness** whenever $\Delta\boldsymbol{g}^{\top}\Delta\boldsymbol{x}>0$ — a condition a proper line search guarantees — so every direction $-\boldsymbol{H}_k\boldsymbol{g}^{(k)}$ is a certified descent direction. On quadratics with exact line searches both reach the exact solution in $n$ steps（they secretly generate conjugate directions）; on general problems both converge superlinearly, and decades of practice crowned **BFGS** the default: it self-corrects bad Hessian information where DFP lets it linger. When even storing the $n\times n$ matrix $\boldsymbol{H}$ is too much, **L-BFGS** keeps only the last $m\approx5$–$20$ pairs $(\Delta\boldsymbol{x},\Delta\boldsymbol{g})$ and applies $\boldsymbol{H}_k$ implicitly — this is the `L-BFGS-B` of scipy and the workhorse inside `nlopt` that will drive the adjoint-based photonics designs of Unit 7.
 
 ```{figure} ../assets/u03_convergence.png
 :name: fig-u3-convergence

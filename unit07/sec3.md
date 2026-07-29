@@ -53,11 +53,11 @@ Run it: [notebook 08](../labs/adjoint.md) builds this exact pipeline for the wav
 
 以簡單與基礎為原則。
 
-**Exercise 1（adjoint on a 2×2 system）.** Let $\boldsymbol{A}(p)=\begin{bmatrix}2&p\\p&1\end{bmatrix}$, $\boldsymbol{b}=(1,0)^{\!\top}$, and $J=x_1+x_2$. At $p=0$: solve the forward system, solve the adjoint system {eq}`eq-u7-adjoint`, and evaluate the gradient {eq}`eq-u7-grad`. Check by differentiating the closed-form solution.
+**Exercise 1（adjoint on a 2×2 system）.** Let $\boldsymbol{A}(p)=\begin{bmatrix}2&p\\p&1\end{bmatrix}$, $\boldsymbol{b}=(1,0)^{\top}$, and $J=x_1+x_2$. At $p=0$: solve the forward system, solve the adjoint system {eq}`eq-u7-adjoint`, and evaluate the gradient {eq}`eq-u7-grad`. Check by differentiating the closed-form solution.
 
 ```{dropdown} Solution
-Forward: $\boldsymbol{A}(0)=\operatorname{diag}(2,1)$, so $\boldsymbol{x}=(\tfrac12,0)^{\!\top}$. Adjoint: $\partial J/\partial\boldsymbol{x}=(1,1)$, and $\boldsymbol{A}^{\!\top}=\boldsymbol{A}$, so $\boldsymbol{\lambda}=(\tfrac12,1)^{\!\top}$. With $\frac{\partial\boldsymbol{A}}{\partial p}=\bigl[\begin{smallmatrix}0&1\\1&0\end{smallmatrix}\bigr]$: $\frac{\mathrm{d}J}{\mathrm{d}p}=-\boldsymbol{\lambda}^{\!\top}\bigl[\begin{smallmatrix}0&1\\1&0\end{smallmatrix}\bigr]\boldsymbol{x}=-(\tfrac12,1)\cdot(0,\tfrac12)^{\!\top}=-\tfrac12$.
-Check: $\boldsymbol{x}(p)=\frac{1}{2-p^2}(1,-p)^{\!\top}$, so $J(p)=\frac{1-p}{2-p^2}$ and $J'(0)=\frac{-(2)-0}{4}=-\tfrac12$. ✓
+Forward: $\boldsymbol{A}(0)=\operatorname{diag}(2,1)$, so $\boldsymbol{x}=(\tfrac12,0)^{\top}$. Adjoint: $\partial J/\partial\boldsymbol{x}=(1,1)$, and $\boldsymbol{A}^{\top}=\boldsymbol{A}$, so $\boldsymbol{\lambda}=(\tfrac12,1)^{\top}$. With $\frac{\partial\boldsymbol{A}}{\partial p}=\bigl[\begin{smallmatrix}0&1\\1&0\end{smallmatrix}\bigr]$: $\frac{\mathrm{d}J}{\mathrm{d}p}=-\boldsymbol{\lambda}^{\top}\bigl[\begin{smallmatrix}0&1\\1&0\end{smallmatrix}\bigr]\boldsymbol{x}=-(\tfrac12,1)\cdot(0,\tfrac12)^{\top}=-\tfrac12$.
+Check: $\boldsymbol{x}(p)=\frac{1}{2-p^2}(1,-p)^{\top}$, so $J(p)=\frac{1-p}{2-p^2}$ and $J'(0)=\frac{-(2)-0}{4}=-\tfrac12$. ✓
 ```
 
 **Exercise 2（count the solves）.** A topology optimization has $10^4$ design pixels and each simulation takes one minute. Compare the cost of one full gradient by（a）finite differences and（b）the adjoint method, and give the wall-clock times.

@@ -5,7 +5,7 @@
 The building block（C&Z Ch. 13）is almost embarrassingly simple: an affine map followed by a scalar nonlinearity,
 
 $$
-h=\sigma(\boldsymbol{w}^{\!\top}\boldsymbol{x}+b),
+h=\sigma(\boldsymbol{w}^{\top}\boldsymbol{x}+b),
 $$
 
 with **weights** $\boldsymbol{w}$, **bias** $b$, and **activation function** $\sigma$. Without $\sigma$ a neuron is linear regression; the nonlinearity is what buys expressive power, because compositions of affine maps collapse back to one affine map, while compositions of *nonlinear* maps do not.

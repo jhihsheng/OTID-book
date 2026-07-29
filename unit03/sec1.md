@@ -13,7 +13,7 @@ where $\alpha_k$ comes from a line search — Armijo backtracking in practice, o
 To analyze SD we use the standard laboratory animal: the positive-definite quadratic
 
 $$
-f(\boldsymbol{x})=\tfrac12\,\boldsymbol{x}^{\!\top}\boldsymbol{Q}\boldsymbol{x}-\boldsymbol{b}^{\!\top}\boldsymbol{x},
+f(\boldsymbol{x})=\tfrac12\,\boldsymbol{x}^{\top}\boldsymbol{Q}\boldsymbol{x}-\boldsymbol{b}^{\top}\boldsymbol{x},
 \qquad \boldsymbol{Q}>0,
 $$ (eq-u3-quad)
 
@@ -38,30 +38,30 @@ The signature picture of this unit. On $f=\frac12(x_1^2+9x_2^2)$（$\kappa=9$）
 
 ## The convergence rate, derived in full
 
-How bad is the zig-zag? Measure progress by $V(\boldsymbol{x})=f(\boldsymbol{x})-f^{*}=\tfrac12(\boldsymbol{x}-\boldsymbol{x}^{*})^{\!\top}\boldsymbol{Q}(\boldsymbol{x}-\boldsymbol{x}^{*})$, and note the identity $V=\tfrac12\,\boldsymbol{g}^{\!\top}\boldsymbol{Q}^{-1}\boldsymbol{g}$（since $\boldsymbol{g}=\boldsymbol{Q}(\boldsymbol{x}-\boldsymbol{x}^{*})$）. One exact-line-search step maps $\boldsymbol{g}\mapsto\boldsymbol{g}^{+}=\boldsymbol{g}-\alpha\boldsymbol{Q}\boldsymbol{g}$, so
+How bad is the zig-zag? Measure progress by $V(\boldsymbol{x})=f(\boldsymbol{x})-f^{*}=\tfrac12(\boldsymbol{x}-\boldsymbol{x}^{*})^{\top}\boldsymbol{Q}(\boldsymbol{x}-\boldsymbol{x}^{*})$, and note the identity $V=\tfrac12\,\boldsymbol{g}^{\top}\boldsymbol{Q}^{-1}\boldsymbol{g}$（since $\boldsymbol{g}=\boldsymbol{Q}(\boldsymbol{x}-\boldsymbol{x}^{*})$）. One exact-line-search step maps $\boldsymbol{g}\mapsto\boldsymbol{g}^{+}=\boldsymbol{g}-\alpha\boldsymbol{Q}\boldsymbol{g}$, so
 
 $$
 2V^{+}=\boldsymbol{g}^{+\top}\boldsymbol{Q}^{-1}\boldsymbol{g}^{+}
-=\boldsymbol{g}^{\!\top}\boldsymbol{Q}^{-1}\boldsymbol{g}
--2\alpha\,\boldsymbol{g}^{\!\top}\boldsymbol{g}
-+\alpha^{2}\,\boldsymbol{g}^{\!\top}\boldsymbol{Q}\boldsymbol{g}
-=\boldsymbol{g}^{\!\top}\boldsymbol{Q}^{-1}\boldsymbol{g}
--\frac{(\boldsymbol{g}^{\!\top}\boldsymbol{g})^{2}}{\boldsymbol{g}^{\!\top}\boldsymbol{Q}\boldsymbol{g}},
+=\boldsymbol{g}^{\top}\boldsymbol{Q}^{-1}\boldsymbol{g}
+-2\alpha\,\boldsymbol{g}^{\top}\boldsymbol{g}
++\alpha^{2}\,\boldsymbol{g}^{\top}\boldsymbol{Q}\boldsymbol{g}
+=\boldsymbol{g}^{\top}\boldsymbol{Q}^{-1}\boldsymbol{g}
+-\frac{(\boldsymbol{g}^{\top}\boldsymbol{g})^{2}}{\boldsymbol{g}^{\top}\boldsymbol{Q}\boldsymbol{g}},
 $$
 
 substituting {eq}`eq-u3-sdstep` in the last equality. Dividing by $2V$:
 
 $$
 \frac{V^{+}}{V}
-=1-\frac{(\boldsymbol{g}^{\!\top}\boldsymbol{g})^{2}}
-{(\boldsymbol{g}^{\!\top}\boldsymbol{Q}\boldsymbol{g})\,(\boldsymbol{g}^{\!\top}\boldsymbol{Q}^{-1}\boldsymbol{g})}.
+=1-\frac{(\boldsymbol{g}^{\top}\boldsymbol{g})^{2}}
+{(\boldsymbol{g}^{\top}\boldsymbol{Q}\boldsymbol{g})\,(\boldsymbol{g}^{\top}\boldsymbol{Q}^{-1}\boldsymbol{g})}.
 $$ (eq-u3-onestep)
 
 The fraction on the right is bounded below by the **Kantorovich inequality**（for any $\boldsymbol{g}\neq\boldsymbol{0}$ and $\boldsymbol{Q}>0$ with extreme eigenvalues $\lambda_{\min},\lambda_{\max}$; proof in C&Z Ch. 8）:
 
 $$
-\frac{(\boldsymbol{g}^{\!\top}\boldsymbol{g})^{2}}
-{(\boldsymbol{g}^{\!\top}\boldsymbol{Q}\boldsymbol{g})(\boldsymbol{g}^{\!\top}\boldsymbol{Q}^{-1}\boldsymbol{g})}
+\frac{(\boldsymbol{g}^{\top}\boldsymbol{g})^{2}}
+{(\boldsymbol{g}^{\top}\boldsymbol{Q}\boldsymbol{g})(\boldsymbol{g}^{\top}\boldsymbol{Q}^{-1}\boldsymbol{g})}
 \;\ge\;\frac{4\lambda_{\min}\lambda_{\max}}{(\lambda_{\min}+\lambda_{\max})^{2}} .
 $$
 

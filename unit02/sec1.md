@@ -8,7 +8,7 @@ Optimization begins before any algorithm: someone must decide *what is being min
 2. **Objective** $f(\boldsymbol{x})$ — one number that says how good a choice is（smaller = better）.
 3. **Constraints** $\Omega$ — which choices are physically or economically admissible?
 
-**Worked example（single-layer antireflection coating）.** The wish:「make a glass surface reflect as little as possible at $\lambda_0=550\,$nm.」We may deposit one thin film, choosing its refractive index $n$ and thickness $t$: so $\boldsymbol{x}=(n,t)^{\!\top}$, two variables. The objective is the reflectance at the design wavelength, $f(n,t)=R(n,t;\lambda_0)$, computed from thin-film interference（by the same transfer-matrix method as [Mini-project I](../labs/tmm.md)）. Constraints: coating materials only exist with $n\in[1.38,\,2.4]$, and $t>0$; hence $\Omega=[1.38,2.4]\times(0,\infty)$. The model is now the standard form of Unit 1:
+**Worked example（single-layer antireflection coating）.** The wish:「make a glass surface reflect as little as possible at $\lambda_0=550\,$nm.」We may deposit one thin film, choosing its refractive index $n$ and thickness $t$: so $\boldsymbol{x}=(n,t)^{\top}$, two variables. The objective is the reflectance at the design wavelength, $f(n,t)=R(n,t;\lambda_0)$, computed from thin-film interference（by the same transfer-matrix method as [Mini-project I](../labs/tmm.md)）. Constraints: coating materials only exist with $n\in[1.38,\,2.4]$, and $t>0$; hence $\Omega=[1.38,2.4]\times(0,\infty)$. The model is now the standard form of Unit 1:
 
 $$
 \min_{(n,t)\in\Omega}\; R(n,t;\lambda_0).
@@ -23,11 +23,11 @@ A point $\boldsymbol{x}^{*}\in\Omega$ is a **local minimizer** if $f(\boldsymbol
 ## First-order necessary condition（FONC）
 
 Take Taylor's theorem {eq}`eq-u1-taylor` to first order along a feasible direction:
-$f(\boldsymbol{x}^{*}+\alpha\boldsymbol{d})=f(\boldsymbol{x}^{*})+\alpha\,\boldsymbol{d}^{\!\top}\nabla f(\boldsymbol{x}^{*})+o(\alpha)$.
-If $\boldsymbol{d}^{\!\top}\nabla f(\boldsymbol{x}^{*})<0$, then for small $\alpha$ the right side dips below $f(\boldsymbol{x}^{*})$ — contradicting minimality. Hence（C&Z Ch. 6）:
+$f(\boldsymbol{x}^{*}+\alpha\boldsymbol{d})=f(\boldsymbol{x}^{*})+\alpha\,\boldsymbol{d}^{\top}\nabla f(\boldsymbol{x}^{*})+o(\alpha)$.
+If $\boldsymbol{d}^{\top}\nabla f(\boldsymbol{x}^{*})<0$, then for small $\alpha$ the right side dips below $f(\boldsymbol{x}^{*})$ — contradicting minimality. Hence（C&Z Ch. 6）:
 
 $$
-\boldsymbol{d}^{\!\top}\nabla f(\boldsymbol{x}^{*})\;\ge\;0
+\boldsymbol{d}^{\top}\nabla f(\boldsymbol{x}^{*})\;\ge\;0
 \quad\text{for every feasible direction }\boldsymbol{d}.
 $$ (eq-u2-fonc)
 
@@ -41,7 +41,7 @@ Points satisfying {eq}`eq-u2-fonc-int` are **stationary points** — candidates,
 
 ## Second-order conditions（SONC and SOSC）
 
-Push the same Taylor argument one order further. Along a feasible $\boldsymbol{d}$ with $\boldsymbol{d}^{\!\top}\nabla f(\boldsymbol{x}^{*})=0$, minimality forces the quadratic term to be nonnegative（C&Z Ch. 6）— at an interior stationary point:
+Push the same Taylor argument one order further. Along a feasible $\boldsymbol{d}$ with $\boldsymbol{d}^{\top}\nabla f(\boldsymbol{x}^{*})=0$, minimality forces the quadratic term to be nonnegative（C&Z Ch. 6）— at an interior stationary point:
 
 **SONC.** $\boldsymbol{F}(\boldsymbol{x}^{*})\ge 0$（Hessian positive semidefinite）.
 
@@ -51,7 +51,7 @@ Necessary is not sufficient, but a small strengthening is（C&Z Ch. 6）:
 
 The definiteness tests of [Unit 1](../unit01/sec2.md)（eigenvalues, Sylvester）are exactly how SONC/SOSC are checked in practice.
 
-**Worked example（a saddle: FONC passes, SONC fails）.** $f(\boldsymbol{x})=x_1^2-x_2^2$: $\nabla f=(2x_1,-2x_2)^{\!\top}=\boldsymbol{0}$ at the origin, so FONC holds. But $\boldsymbol{F}=\operatorname{diag}(2,-2)$ has eigenvalues of both signs — indefinite, SONC fails — and indeed the origin is a saddle: $f$ increases along $x_1$, decreases along $x_2$.
+**Worked example（a saddle: FONC passes, SONC fails）.** $f(\boldsymbol{x})=x_1^2-x_2^2$: $\nabla f=(2x_1,-2x_2)^{\top}=\boldsymbol{0}$ at the origin, so FONC holds. But $\boldsymbol{F}=\operatorname{diag}(2,-2)$ has eigenvalues of both signs — indefinite, SONC fails — and indeed the origin is a saddle: $f$ increases along $x_1$, decreases along $x_2$.
 
 **A sharper warning（SONC passes, still no minimum）.** $f(\boldsymbol{x})=x_1^2-x_2^4$: at the origin $\nabla f=\boldsymbol{0}$ and $\boldsymbol{F}=\operatorname{diag}(2,0)\ge 0$, so FONC *and* SONC both hold. Yet $f(0,\varepsilon)=-\varepsilon^4<0=f(\boldsymbol{0})$ for every $\varepsilon\neq0$: the origin is not a local minimizer. Necessary conditions filter candidates; only SOSC certifies（and here SOSC correctly refuses: $\boldsymbol{F}$ is not positive *definite*）.
 

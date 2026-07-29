@@ -7,7 +7,7 @@ Steepest descent fails because it ignores curvature: it treats every direction a
 $$
 q(\boldsymbol{x}^{(k)}+\boldsymbol{d})
 =f(\boldsymbol{x}^{(k)})+\boldsymbol{g}^{(k)\top}\boldsymbol{d}
-+\tfrac12\,\boldsymbol{d}^{\!\top}\boldsymbol{F}(\boldsymbol{x}^{(k)})\,\boldsymbol{d}
++\tfrac12\,\boldsymbol{d}^{\top}\boldsymbol{F}(\boldsymbol{x}^{(k)})\,\boldsymbol{d}
 $$
 
 has（for $\boldsymbol{F}>0$）the unique minimizer where $\nabla q=\boldsymbol{g}^{(k)}+\boldsymbol{F}\boldsymbol{d}=\boldsymbol{0}$. The **Newton step** solves that linear system:
@@ -39,7 +39,7 @@ $$ (eq-u3-lm)
 
 The **Levenberg–Marquardt modification** {eq}`eq-u3-lm`（C&Z Ch. 9）interpolates continuously between the two poles of this unit: $\mu_k\to0$ recovers pure Newton, while $\mu_k$ large makes $\boldsymbol{d}^{(k)}\approx-\boldsymbol{g}^{(k)}/\mu_k$ — a short steepest-descent step. Choosing $\mu_k>-\lambda_{\min}(\boldsymbol{F})$ also forces the shifted matrix positive definite, so the step is a guaranteed descent direction even where the raw Hessian is indefinite. Practical logic: try a step; if it reduces $f$, shrink $\mu$（trust the model more）; if not, grow $\mu$（retreat toward gradient descent）.
 
-For **nonlinear least squares** $f(\boldsymbol{x})=\tfrac12\sum_i r_i(\boldsymbol{x})^2$ — spectrum fitting, for instance — the Gauss–Newton approximation replaces $\boldsymbol{F}$ by $\boldsymbol{J}^{\!\top}\boldsymbol{J}$（$\boldsymbol{J}$ the Jacobian of the residuals）, getting Newton-like steps from first derivatives only; Levenberg–Marquardt applied to it is the classic workhorse behind `scipy.optimize.least_squares`. We leave it at this one-line pointer.
+For **nonlinear least squares** $f(\boldsymbol{x})=\tfrac12\sum_i r_i(\boldsymbol{x})^2$ — spectrum fitting, for instance — the Gauss–Newton approximation replaces $\boldsymbol{F}$ by $\boldsymbol{J}^{\top}\boldsymbol{J}$（$\boldsymbol{J}$ the Jacobian of the residuals）, getting Newton-like steps from first derivatives only; Levenberg–Marquardt applied to it is the classic workhorse behind `scipy.optimize.least_squares`. We leave it at this one-line pointer.
 
 ## The scoreboard so far
 

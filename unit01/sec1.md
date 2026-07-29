@@ -8,7 +8,7 @@ $$
 \min_{\boldsymbol{x}\in\Omega} \; f(\boldsymbol{x}),
 $$ (eq-u1-standard)
 
-where $f:\mathbb{R}^n\to\mathbb{R}$ is the **objective function**（目標函數）, the vector $\boldsymbol{x}=(x_1,\dots,x_n)^{\!\top}$ collects the **decision variables**（設計變數）, and $\Omega\subseteq\mathbb{R}^n$ is the **feasible set**（可行集合）— the designs we are allowed to choose. Maximization is included for free: maximizing $f$ is minimizing $-f$. A point $\boldsymbol{x}^{*}$ solving {eq}`eq-u1-standard` is a **minimizer**; the value $f(\boldsymbol{x}^{*})$ is the minimum. C&Z Ch. 1 fixes this vocabulary and the vector notation we use throughout: vectors are bold lowercase columns, matrices bold uppercase, scalars italic.
+where $f:\mathbb{R}^n\to\mathbb{R}$ is the **objective function**（目標函數）, the vector $\boldsymbol{x}=(x_1,\dots,x_n)^{\top}$ collects the **decision variables**（設計變數）, and $\Omega\subseteq\mathbb{R}^n$ is the **feasible set**（可行集合）— the designs we are allowed to choose. Maximization is included for free: maximizing $f$ is minimizing $-f$. A point $\boldsymbol{x}^{*}$ solving {eq}`eq-u1-standard` is a **minimizer**; the value $f(\boldsymbol{x}^{*})$ is the minimum. C&Z Ch. 1 fixes this vocabulary and the vector notation we use throughout: vectors are bold lowercase columns, matrices bold uppercase, scalars italic.
 
 Writing a real engineering wish in the form {eq}`eq-u1-standard` — choosing what $\boldsymbol{x}$, $f$, and $\Omega$ are — is itself a skill（最佳化問題建模, official course goal #2）, and Unit 2 opens with a worked modeling example. Here we survey the *kinds* of problems the form can hide, because the kind dictates the method.
 

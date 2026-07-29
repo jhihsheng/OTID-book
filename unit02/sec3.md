@@ -50,7 +50,7 @@ Second derivatives are often unavailable or costly. Replace $f''(x^{(k)})$ in {e
 In Unit 3, multidimensional methods will generate a *direction* $\boldsymbol{d}$ and then face a one-dimensional problem: how far to step? Solving it *exactly* with golden-section or Newton is wasted effort — the direction is already an approximation. Modern practice demands only a **sufficient decrease**: accept step size $\alpha$ if
 
 $$
-f(\boldsymbol{x}+\alpha\boldsymbol{d})\;\le\;f(\boldsymbol{x})+c\,\alpha\,\nabla f(\boldsymbol{x})^{\!\top}\boldsymbol{d},
+f(\boldsymbol{x}+\alpha\boldsymbol{d})\;\le\;f(\boldsymbol{x})+c\,\alpha\,\nabla f(\boldsymbol{x})^{\top}\boldsymbol{d},
 $$ (eq-u2-armijo)
 
 the **Armijo condition**: the achieved decrease must be at least a fraction $c$ of what the linear model promised（$c=10^{-4}$ is the standard choice; Kochenderfer & Wheeler, *Algorithms for Optimization*, MIT Press 2019）. **Backtracking** finds such an $\alpha$ by trial halving:

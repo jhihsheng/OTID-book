@@ -5,12 +5,12 @@
 | 符號 | 意義 | 首次出現 |
 |------|------|----------|
 | $f:\mathbb{R}^n\to\mathbb{R}$ | 目標函數 objective function | [U1 sec1](unit01/sec1.md) |
-| $\boldsymbol{x}=(x_1,\dots,x_n)^{\!\top}$ | 決策變數向量 decision vector | [U1 sec1](unit01/sec1.md) |
+| $\boldsymbol{x}=(x_1,\dots,x_n)^{\top}$ | 決策變數向量 decision vector | [U1 sec1](unit01/sec1.md) |
 | $\Omega\subseteq\mathbb{R}^n$ | 可行集合 feasible set | [U1 sec1](unit01/sec1.md) |
 | $\boldsymbol{x}^{*}$ | 最小點 minimizer | [U1 sec1](unit01/sec1.md) |
-| $\boldsymbol{x}^{\!\top}\boldsymbol{y}$，$\|\boldsymbol{x}\|$ | 內積 inner product、歐氏範數 Euclidean norm | [U1 sec2](unit01/sec2.md) |
+| $\boldsymbol{x}^{\top}\boldsymbol{y}$，$\|\boldsymbol{x}\|$ | 內積 inner product、歐氏範數 Euclidean norm | [U1 sec2](unit01/sec2.md) |
 | $\lambda_i$，$\boldsymbol{u}_i$ | 對稱矩陣之特徵值／正交特徵向量 | [U1 sec2](unit01/sec2.md) |
-| $\boldsymbol{Q}=\boldsymbol{U}\boldsymbol{\Lambda}\boldsymbol{U}^{\!\top}$ | 正交對角化 orthogonal diagonalization | [U1 sec2](unit01/sec2.md) |
+| $\boldsymbol{Q}=\boldsymbol{U}\boldsymbol{\Lambda}\boldsymbol{U}^{\top}$ | 正交對角化 orthogonal diagonalization | [U1 sec2](unit01/sec2.md) |
 | $\boldsymbol{Q}>0$，$\boldsymbol{Q}\ge 0$ | 正定 positive definite、半正定 positive semidefinite（C&Z 記號，指二次形） | [U1 sec2](unit01/sec2.md) |
 | $\Delta_k$ | 第 $k$ 個 leading principal minor（Sylvester 判別） | [U1 sec2](unit01/sec2.md) |
 | $\kappa=\lambda_{\max}/\lambda_{\min}$ | 條件數 condition number | [U1 sec2](unit01/sec2.md) |
@@ -18,7 +18,7 @@
 | $\nabla f(\boldsymbol{x})$ | 梯度（行向量）gradient | [U1 sec3](unit01/sec3.md) |
 | $\boldsymbol{F}(\boldsymbol{x})$ | Hessian 矩陣（依 C&Z 記號） | [U1 sec3](unit01/sec3.md) |
 | $\mathrm{D}\boldsymbol{h}$ | Jacobian 矩陣（$m\times n$） | [U1 sec3](unit01/sec3.md) |
-| $\boldsymbol{d}$ | 方向向量 direction；$\boldsymbol{d}^{\!\top}\nabla f$ 為方向導數 | [U1 sec3](unit01/sec3.md) |
+| $\boldsymbol{d}$ | 方向向量 direction；$\boldsymbol{d}^{\top}\nabla f$ 為方向導數 | [U1 sec3](unit01/sec3.md) |
 | $\alpha$ | 步長 step size（line search） | [U2 sec1](unit02/sec1.md) |
 | $\tau=\frac{\sqrt5-1}{2}$，$\rho=1-\tau$ | 黃金分割縮減率／內點位置比 | [U2 sec2](unit02/sec2.md) |
 | $F_k$ | Fibonacci 數（$F_1=F_2=1$） | [U2 sec2](unit02/sec2.md) |
@@ -52,7 +52,7 @@
 | $\phi(\boldsymbol{r})$ | level-set 函數（邊界＝$\phi=0$） | [U6 sec2](unit06/sec2.md) |
 | $\rho_i\in[0,1]$ | density-based TO 之像素密度 | [U6 sec2](unit06/sec2.md) |
 | $\boldsymbol{A}(\boldsymbol{p})\boldsymbol{x}=\boldsymbol{b}$ | 離散化後的狀態方程（field solve） | [U7 sec1](unit07/sec1.md) |
-| $\boldsymbol{\lambda}$ | adjoint 變數（$\boldsymbol{A}^{\!\top}\boldsymbol{\lambda}=(\partial J/\partial\boldsymbol{x})^{\!\top}$） | [U7 sec1](unit07/sec1.md) |
+| $\boldsymbol{\lambda}$ | adjoint 變數（$\boldsymbol{A}^{\top}\boldsymbol{\lambda}=(\partial J/\partial\boldsymbol{x})^{\top}$） | [U7 sec1](unit07/sec1.md) |
 | $\tilde{\rho}$，$\bar{\rho}$ | 濾波後／投影後密度 | [U7 sec3](unit07/sec3.md) |
 | $R$；$\beta$，$\eta$ | 濾波半徑（最小特徵）；投影銳度與門檻 | [U7 sec3](unit07/sec3.md) |
 | $\dot{v}$；$\bar{v}$ | forward-mode 切向量（JVP）；reverse-mode adjoint（VJP） | [U8 sec1](unit08/sec1.md) |

@@ -33,10 +33,10 @@ $$
 \frac{\partial\boldsymbol{A}}{\partial p_i}\,\boldsymbol{x}.
 $$
 
-There is the trick, sitting in plain sight: the expensive factor $\frac{\partial J}{\partial\boldsymbol{x}}\boldsymbol{A}^{-1}$ — a *row* vector — is the **same for every parameter**. Compute it once, by one linear solve: name it $\boldsymbol{\lambda}^{\!\top}=\frac{\partial J}{\partial\boldsymbol{x}}\boldsymbol{A}^{-1}$, i.e.
+There is the trick, sitting in plain sight: the expensive factor $\frac{\partial J}{\partial\boldsymbol{x}}\boldsymbol{A}^{-1}$ — a *row* vector — is the **same for every parameter**. Compute it once, by one linear solve: name it $\boldsymbol{\lambda}^{\top}=\frac{\partial J}{\partial\boldsymbol{x}}\boldsymbol{A}^{-1}$, i.e.
 
 $$
-\boldsymbol{A}^{\!\top}\boldsymbol{\lambda}
+\boldsymbol{A}^{\top}\boldsymbol{\lambda}
 =\Bigl(\frac{\partial J}{\partial\boldsymbol{x}}\Bigr)^{\!\!\top}
 $$ (eq-u7-adjoint)
 
@@ -44,7 +44,7 @@ $$ (eq-u7-adjoint)
 
 $$
 \frac{\mathrm{d}J}{\mathrm{d}p_i}
-=-\,\boldsymbol{\lambda}^{\!\top}\,
+=-\,\boldsymbol{\lambda}^{\top}\,
 \frac{\partial\boldsymbol{A}}{\partial p_i}\,\boldsymbol{x},
 \qquad i=1,\dots,n_p .
 $$ (eq-u7-grad)
@@ -61,18 +61,18 @@ The regrouping can be made systematic instead of clever — useful when the sett
 
 $$
 \mathcal{L}(\boldsymbol{x},\boldsymbol{p},\boldsymbol{\lambda})
-=J(\boldsymbol{x})+\boldsymbol{\lambda}^{\!\top}\bigl(\boldsymbol{b}-\boldsymbol{A}(\boldsymbol{p})\boldsymbol{x}\bigr).
+=J(\boldsymbol{x})+\boldsymbol{\lambda}^{\top}\bigl(\boldsymbol{b}-\boldsymbol{A}(\boldsymbol{p})\boldsymbol{x}\bigr).
 $$
 
 Whenever $\boldsymbol{x}$ solves {eq}`eq-u7-state`, the parenthesis vanishes and $\mathcal{L}=J$ for *any* $\boldsymbol{\lambda}$ — so we may differentiate $\mathcal{L}$ instead of $J$ and *choose* $\boldsymbol{\lambda}$ to our convenience:
 
 $$
 \frac{\mathrm{d}J}{\mathrm{d}p_i}
-=\underbrace{\Bigl(\frac{\partial J}{\partial\boldsymbol{x}}-\boldsymbol{\lambda}^{\!\top}\boldsymbol{A}\Bigr)}_{\text{kill this by choosing }\boldsymbol{\lambda}}
+=\underbrace{\Bigl(\frac{\partial J}{\partial\boldsymbol{x}}-\boldsymbol{\lambda}^{\top}\boldsymbol{A}\Bigr)}_{\text{kill this by choosing }\boldsymbol{\lambda}}
 \frac{\partial\boldsymbol{x}}{\partial p_i}
-\;-\;\boldsymbol{\lambda}^{\!\top}\frac{\partial\boldsymbol{A}}{\partial p_i}\boldsymbol{x}.
+\;-\;\boldsymbol{\lambda}^{\top}\frac{\partial\boldsymbol{A}}{\partial p_i}\boldsymbol{x}.
 $$
 
-The first bracket multiplies the unknown, expensive $\partial\boldsymbol{x}/\partial p_i$; annihilate it by demanding $\boldsymbol{\lambda}^{\!\top}\boldsymbol{A}=\partial J/\partial\boldsymbol{x}$ — which is exactly the adjoint system {eq}`eq-u7-adjoint` — and what survives is exactly the gradient formula {eq}`eq-u7-grad`. Same two equations, now derived by design rather than by inspection: *choose the multiplier so that the sensitivity of the state never needs computing.* Nothing here used linearity of $J$（only its differentiability）, and the pattern generalizes: nonlinear state equations, time-stepping（where the adjoint runs *backward* in time）, PDE-constrained control — all one Lagrangian away.
+The first bracket multiplies the unknown, expensive $\partial\boldsymbol{x}/\partial p_i$; annihilate it by demanding $\boldsymbol{\lambda}^{\top}\boldsymbol{A}=\partial J/\partial\boldsymbol{x}$ — which is exactly the adjoint system {eq}`eq-u7-adjoint` — and what survives is exactly the gradient formula {eq}`eq-u7-grad`. Same two equations, now derived by design rather than by inspection: *choose the multiplier so that the sensitivity of the state never needs computing.* Nothing here used linearity of $J$（only its differentiability）, and the pattern generalizes: nonlinear state equations, time-stepping（where the adjoint runs *backward* in time）, PDE-constrained control — all one Lagrangian away.
 
 The formula {eq}`eq-u7-grad` is abstract linear algebra; [the next section](sec2.md) reads it physically, where $\boldsymbol{A}$ is Maxwell's operator and $\boldsymbol{\lambda}$ turns out to be a second electromagnetic field with a story of its own.

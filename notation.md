@@ -31,3 +31,12 @@
 | $\beta_k$ | CG 方向修正係數（FR／PR） | [U3 sec3](unit03/sec3.md) |
 | $\Delta\boldsymbol{x}^{(k)}$，$\Delta\boldsymbol{g}^{(k)}$ | quasi-Newton 之位移與梯度差 | [U3 sec3](unit03/sec3.md) |
 | $\boldsymbol{H}_k$ | inverse-Hessian 近似（quasi-Newton） | [U3 sec3](unit03/sec3.md) |
+| $\boldsymbol{\theta}$ | 神經網路全體參數向量 | [U4 sec1](unit04/sec1.md) |
+| $\sigma(\cdot)$ | activation function（sigmoid／tanh／ReLU） | [U4 sec1](unit04/sec1.md) |
+| $\boldsymbol{W}_l$，$\boldsymbol{b}_l$ | 第 $l$ 層權重矩陣與偏置 | [U4 sec1](unit04/sec1.md) |
+| $J(\boldsymbol{\theta})$ | empirical risk（訓練目標函數） | [U4 sec1](unit04/sec1.md) |
+| $\boldsymbol{\delta}_l$ | 第 $l$ 層 error signal（backprop） | [U4 sec2](unit04/sec2.md) |
+| $\hat{\boldsymbol{g}}$ | minibatch 梯度估計 | [U4 sec3](unit04/sec3.md) |
+| $\beta$；$\beta_1,\beta_2$ | momentum 係數；Adam 一、二階動量係數 | [U4 sec3](unit04/sec3.md) |
+| $\boldsymbol{m}$，$\boldsymbol{v}$，$\varepsilon$ | Adam 動量估計與數值穩定項 | [U4 sec3](unit04/sec3.md) |
+| $\odot$ | 逐元素（Hadamard）乘積 | [U4 sec3](unit04/sec3.md) |

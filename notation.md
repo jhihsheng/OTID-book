@@ -51,3 +51,7 @@
 | $J(\boldsymbol{p})$ | figure of merit（FoM，設計目標函數） | [U6 sec1](unit06/sec1.md) |
 | $\phi(\boldsymbol{r})$ | level-set 函數（邊界＝$\phi=0$） | [U6 sec2](unit06/sec2.md) |
 | $\rho_i\in[0,1]$ | density-based TO 之像素密度 | [U6 sec2](unit06/sec2.md) |
+| $\boldsymbol{A}(\boldsymbol{p})\boldsymbol{x}=\boldsymbol{b}$ | 離散化後的狀態方程（field solve） | [U7 sec1](unit07/sec1.md) |
+| $\boldsymbol{\lambda}$ | adjoint 變數（$\boldsymbol{A}^{\!\top}\boldsymbol{\lambda}=(\partial J/\partial\boldsymbol{x})^{\!\top}$） | [U7 sec1](unit07/sec1.md) |
+| $\tilde{\rho}$，$\bar{\rho}$ | 濾波後／投影後密度 | [U7 sec3](unit07/sec3.md) |
+| $R$；$\beta$，$\eta$ | 濾波半徑（最小特徵）；投影銳度與門檻 | [U7 sec3](unit07/sec3.md) |

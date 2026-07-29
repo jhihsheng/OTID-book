@@ -24,3 +24,10 @@
 | $F_k$ | Fibonacci 數（$F_1=F_2=1$） | [U2 sec2](unit02/sec2.md) |
 | $p$，$C$ | 收斂階 order of convergence 與 rate | [U2 sec3](unit02/sec3.md) |
 | $c$ | Armijo 充分下降常數（典型 $10^{-4}$） | [U2 sec3](unit02/sec3.md) |
+| $\boldsymbol{g}^{(k)}=\nabla f(\boldsymbol{x}^{(k)})$ | 第 $k$ 迭代的梯度（C&Z 記號） | [U3 sec1](unit03/sec1.md) |
+| $V(\boldsymbol{x})=f(\boldsymbol{x})-f^{*}$ | 收斂分析用的誤差量 | [U3 sec1](unit03/sec1.md) |
+| $\boldsymbol{M}$ | preconditioner（$\boldsymbol{M}\approx\boldsymbol{Q}$） | [U3 sec1](unit03/sec1.md) |
+| $\mu_k$ | Levenberg–Marquardt 位移參數 | [U3 sec2](unit03/sec2.md) |
+| $\beta_k$ | CG 方向修正係數（FR／PR） | [U3 sec3](unit03/sec3.md) |
+| $\Delta\boldsymbol{x}^{(k)}$，$\Delta\boldsymbol{g}^{(k)}$ | quasi-Newton 之位移與梯度差 | [U3 sec3](unit03/sec3.md) |
+| $\boldsymbol{H}_k$ | inverse-Hessian 近似（quasi-Newton） | [U3 sec3](unit03/sec3.md) |

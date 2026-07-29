@@ -19,3 +19,8 @@
 | $\boldsymbol{F}(\boldsymbol{x})$ | Hessian 矩陣（依 C&Z 記號） | [U1 sec3](unit01/sec3.md) |
 | $\mathrm{D}\boldsymbol{h}$ | Jacobian 矩陣（$m\times n$） | [U1 sec3](unit01/sec3.md) |
 | $\boldsymbol{d}$ | 方向向量 direction；$\boldsymbol{d}^{\!\top}\nabla f$ 為方向導數 | [U1 sec3](unit01/sec3.md) |
+| $\alpha$ | 步長 step size（line search） | [U2 sec1](unit02/sec1.md) |
+| $\tau=\frac{\sqrt5-1}{2}$，$\rho=1-\tau$ | 黃金分割縮減率／內點位置比 | [U2 sec2](unit02/sec2.md) |
+| $F_k$ | Fibonacci 數（$F_1=F_2=1$） | [U2 sec2](unit02/sec2.md) |
+| $p$，$C$ | 收斂階 order of convergence 與 rate | [U2 sec3](unit02/sec3.md) |
+| $c$ | Armijo 充分下降常數（典型 $10^{-4}$） | [U2 sec3](unit02/sec3.md) |

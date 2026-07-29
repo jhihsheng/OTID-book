@@ -86,7 +86,7 @@ Both rank-two updates **preserve positive definiteness** whenever $\Delta\boldsy
 :name: fig-u3-convergence
 :width: 88%
 
-One quadratic（$n=20$, $\kappa=100$）, identical exact line searches — only the directions differ. Steepest descent grinds at rate $\bigl(\frac{\kappa-1}{\kappa+1}\bigr)^2\approx0.96$; CG and BFGS terminate by step $n$（with exact line searches they generate the same conjugate directions, so their curves coincide）; Newton lands in one step. The vertical axis spans sixteen orders of magnitude.
+One quadratic（$n=20$, $\kappa=100$）, identical exact line searches — only the directions differ. Steepest descent grinds at rate $\bigl(\frac{\kappa-1}{\kappa+1}\bigr)^2\approx0.96$; CG and BFGS terminate at essentially step $n$（their curves coincide — with exact line searches they generate the same conjugate directions; floating-point roundoff delays CG's final plunge by a few iterations）; Newton lands in one step. The vertical axis spans sixteen orders of magnitude.
 ```
 
 ```{seealso}

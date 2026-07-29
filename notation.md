@@ -40,3 +40,9 @@
 | $\beta$；$\beta_1,\beta_2$ | momentum 係數；Adam 一、二階動量係數 | [U4 sec3](unit04/sec3.md) |
 | $\boldsymbol{m}$，$\boldsymbol{v}$，$\varepsilon$ | Adam 動量估計與數值穩定項 | [U4 sec3](unit04/sec3.md) |
 | $\odot$ | 逐元素（Hadamard）乘積 | [U4 sec3](unit04/sec3.md) |
+| $E(\cdot)$，$T$ | 能量（目標）函數與溫度（Metropolis／SA） | [U5 sec1](unit05/sec1.md) |
+| $w$，$c_1$，$c_2$ | PSO 慣性、認知、社會係數 | [U5 sec2](unit05/sec2.md) |
+| $F$，$CR$ | DE 縮放因子與 crossover 率 | [U5 sec2](unit05/sec2.md) |
+| $s_i\in\{-1,+1\}$，$x_i\in\{0,1\}$ | Ising 自旋與 QUBO 二元變數（$s=2x-1$） | [U5 sec4](unit05/sec4.md) |
+| $h_i$，$J_{ij}$ | Ising 局域場與耦合 | [U5 sec4](unit05/sec4.md) |
+| $A(s)$，$B(s)$；$\sigma^{x,z}_i$ | 退火時程之 driver／problem 幅度；Pauli 算符 | [U5 sec4](unit05/sec4.md) |

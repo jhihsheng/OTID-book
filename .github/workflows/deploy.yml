@@ -47,9 +47,9 @@ jobs:
           for f in _build/html/sitemap.xml _build/html/robots.txt; do
             if [ -f "$f" ]; then sed -i "s|http://localhost:3000|${SITE_URL}|g" "$f"; fi
           done
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: _build/html
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

@@ -8,14 +8,14 @@ from matplotlib.patches import FancyBboxPatch
 BLUE, ORANGE, GREEN, GREY = "#0072B2", "#E69F00", "#009E73", "#999999"
 
 units = [
-    ("U1", "Mathematical preliminaries"),
+    ("U1", "Math preliminaries"),
     ("U2", "Basics & 1-D search"),
-    ("U3", "Gradient / Newton / CG / QN"),
+    ("U3", "Gradient, Newton, QN"),
     ("U4", "Neural networks"),
-    ("U5", "Heuristics: MC, GA/PSO/DE, SA/QA"),
+    ("U5", "MC, GA/PSO/DE, SA/QA"),
     ("U6", "Inverse design concepts"),
-    ("U7", "Adjoint & topology optim."),
-    ("U8", "Automatic differentiation"),
+    ("U7", "Adjoint & topology opt."),
+    ("U8", "Autodiff & numerics"),
 ]
 mods = [
     ("env", "Environment setup"),
@@ -51,7 +51,7 @@ for i, (tag, label) in enumerate(units):
 for i, (tag, label) in enumerate(mods):
     y = 7.5 - i
     pos_m[tag] = (6.6, y)
-    ax.add_patch(FancyBboxPatch((6.6, y - 0.32), 2.9, 0.68,
+    ax.add_patch(FancyBboxPatch((6.6, y - 0.32), 3.15, 0.68,
                                 boxstyle="round,pad=0.06", fc="#FDF3E3", ec=ORANGE, lw=1.4))
     ax.text(6.77, y, f"{tag}:  {label}", va="center", ha="left", fontsize=9.2, color="#1a1a2e")
 
@@ -64,7 +64,7 @@ for u, m in edges:
 
 ax.text(1.55, 8.25, "Part I — Theory units", fontsize=11.5, ha="center", weight="bold", color=BLUE)
 ax.text(8.05, 8.25, "Part II — Hands-on modules", fontsize=11.5, ha="center", weight="bold", color="#B0721E")
-ax.text(5.0, -0.45, "Arrows: the theory a module draws on（模組使用的理論單元）",
+ax.text(5.0, -0.45, "Arrows: the theory each hands-on module draws on",
         fontsize=9, ha="center", color=GREY)
 
 out = Path(__file__).resolve().parent.parent / "assets" / "u01_roadmap.png"

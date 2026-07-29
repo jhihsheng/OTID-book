@@ -16,7 +16,7 @@ Two principles fix the answer uniquely.
 
 $$
 \tau^{2}=1-\tau
-\quad\Longrightarrow\quad
+\quad\Rightarrow\quad
 \tau=\frac{\sqrt{5}-1}{2}\approx0.618,
 \qquad
 \rho=1-\tau=\frac{3-\sqrt{5}}{2}\approx0.382.

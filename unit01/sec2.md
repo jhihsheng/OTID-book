@@ -47,14 +47,14 @@ $$ (eq-u1-qform)
 
 The sign behaviour of $f$ is therefore read off the eigenvalues. We say $\boldsymbol{Q}$ is
 
-- **positive definite**（$\boldsymbol{Q}\succ0$）if $\boldsymbol{x}^{\!\top}\boldsymbol{Q}\boldsymbol{x}>0$ for all $\boldsymbol{x}\neq\boldsymbol{0}$;
-- **positive semidefinite**（$\boldsymbol{Q}\succeq0$）if $\boldsymbol{x}^{\!\top}\boldsymbol{Q}\boldsymbol{x}\ge0$ for all $\boldsymbol{x}$;
+- **positive definite**（$\boldsymbol{Q}>0$）if $\boldsymbol{x}^{\!\top}\boldsymbol{Q}\boldsymbol{x}>0$ for all $\boldsymbol{x}\neq\boldsymbol{0}$;
+- **positive semidefinite**（$\boldsymbol{Q}\ge 0$）if $\boldsymbol{x}^{\!\top}\boldsymbol{Q}\boldsymbol{x}\ge0$ for all $\boldsymbol{x}$;
 
-and negative (semi)definite with the inequalities reversed; anything else is **indefinite**. From {eq}`eq-u1-qform`:
+and negative (semi)definite with the inequalities reversed; anything else is **indefinite**.（Notation follows C&Z: $\boldsymbol{Q}>0$ and $\boldsymbol{Q}\ge 0$ are statements about the *quadratic form*, not elementwise inequalities.） From {eq}`eq-u1-qform`:
 
-**Eigenvalue test.** $\boldsymbol{Q}\succ0 \iff$ all $\lambda_i>0$; $\;\boldsymbol{Q}\succeq0 \iff$ all $\lambda_i\ge0$; a mix of signs $\iff$ indefinite.
+**Eigenvalue test.** $\boldsymbol{Q}>0$ if and only if all $\lambda_i>0$; $\boldsymbol{Q}\ge 0$ if and only if all $\lambda_i\ge0$; a mix of signs means indefinite.
 
-**Sylvester's criterion.** $\boldsymbol{Q}\succ0$ iff all $n$ **leading principal minors** are positive, $\Delta_1=q_{11}>0$, $\Delta_2=\det\begin{bmatrix}q_{11}&q_{12}\\ q_{21}&q_{22}\end{bmatrix}>0,\;\dots,\;\Delta_n=\det\boldsymbol{Q}>0$ — no eigenvalues needed.
+**Sylvester's criterion.** $\boldsymbol{Q}>0$ iff all $n$ **leading principal minors** are positive, $\Delta_1=q_{11}>0$, $\Delta_2=\det\begin{bmatrix}q_{11}&q_{12}\\ q_{21}&q_{22}\end{bmatrix}>0,\;\dots,\;\Delta_n=\det\boldsymbol{Q}>0$ — no eigenvalues needed.
 
 ```{warning}
 Sylvester's criterion with $\ge$ does **not** test semidefiniteness. $\boldsymbol{Q}=\begin{bmatrix}0&0\\0&-1\end{bmatrix}$ has $\Delta_1=0,\ \Delta_2=0$, yet it is negative semidefinite, not PSD. Semidefiniteness requires *all* principal minors（not just leading ones）to be $\ge0$ — or simply use the eigenvalue test.
@@ -62,13 +62,13 @@ Sylvester's criterion with $\ge$ does **not** test semidefiniteness. $\boldsymbo
 
 ### Worked examples
 
-**A $2\times2$ case.** $\boldsymbol{Q}=\begin{bmatrix}2&1\\1&3\end{bmatrix}$: $\Delta_1=2>0$, $\Delta_2=6-1=5>0$, so $\boldsymbol{Q}\succ0$. Check by eigenvalues: $\lambda=\tfrac{5\pm\sqrt{5}}{2}\approx 3.62,\ 1.38$, both positive. ✓
+**A $2\times2$ case.** $\boldsymbol{Q}=\begin{bmatrix}2&1\\1&3\end{bmatrix}$: $\Delta_1=2>0$, $\Delta_2=6-1=5>0$, so $\boldsymbol{Q}>0$. Check by eigenvalues: $\lambda=\tfrac{5\pm\sqrt{5}}{2}\approx 3.62,\ 1.38$, both positive. ✓
 
-**A $3\times3$ case.** $\boldsymbol{Q}=\begin{bmatrix}2&-1&0\\-1&2&-1\\0&-1&2\end{bmatrix}$: $\Delta_1=2$, $\Delta_2=4-1=3$, $\Delta_3=\det\boldsymbol{Q}=2(4-1)-(-1)(-2-0)=6-2=4$. All positive $\Rightarrow \boldsymbol{Q}\succ0$.
+**A $3\times3$ case.** $\boldsymbol{Q}=\begin{bmatrix}2&-1&0\\-1&2&-1\\0&-1&2\end{bmatrix}$: $\Delta_1=2$, $\Delta_2=4-1=3$, $\Delta_3=\det\boldsymbol{Q}=2(4-1)-(-1)(-2-0)=6-2=4$. All positive $\Rightarrow \boldsymbol{Q}>0$.
 
 ## Why we care（forward pointers）
 
-- **Unit 2:** at an interior stationary point, Hessian $\succeq0$ is *necessary* for a minimum and Hessian $\succ0$ is *sufficient* for a strict one — the definiteness tests above are literally the second-order optimality check.
+- **Unit 2:** at an interior stationary point, Hessian $\ge 0$ is *necessary* for a minimum and Hessian $>0$ is *sufficient* for a strict one — the definiteness tests above are literally the second-order optimality check.
 - **Unit 3:** for a PD quadratic, the level sets of $f=\tfrac12\boldsymbol{x}^{\!\top}\boldsymbol{Q}\boldsymbol{x}$ are ellipsoids with axes along the $\boldsymbol{u}_i$ and lengths $\propto1/\sqrt{\lambda_i}$; the **condition number** $\kappa=\lambda_{\max}/\lambda_{\min}$ measures their elongation and will *exactly* govern how fast steepest descent converges.
 
 ```{seealso}

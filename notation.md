@@ -11,7 +11,7 @@
 | $\boldsymbol{x}^{\!\top}\boldsymbol{y}$，$\|\boldsymbol{x}\|$ | 內積 inner product、歐氏範數 Euclidean norm | [U1 sec2](unit01/sec2.md) |
 | $\lambda_i$，$\boldsymbol{u}_i$ | 對稱矩陣之特徵值／正交特徵向量 | [U1 sec2](unit01/sec2.md) |
 | $\boldsymbol{Q}=\boldsymbol{U}\boldsymbol{\Lambda}\boldsymbol{U}^{\!\top}$ | 正交對角化 orthogonal diagonalization | [U1 sec2](unit01/sec2.md) |
-| $\boldsymbol{Q}\succ0$，$\boldsymbol{Q}\succeq0$ | 正定 positive definite、半正定 positive semidefinite | [U1 sec2](unit01/sec2.md) |
+| $\boldsymbol{Q}>0$，$\boldsymbol{Q}\ge 0$ | 正定 positive definite、半正定 positive semidefinite（C&Z 記號，指二次形） | [U1 sec2](unit01/sec2.md) |
 | $\Delta_k$ | 第 $k$ 個 leading principal minor（Sylvester 判別） | [U1 sec2](unit01/sec2.md) |
 | $\kappa=\lambda_{\max}/\lambda_{\min}$ | 條件數 condition number | [U1 sec2](unit01/sec2.md) |
 | $S_c=\{\boldsymbol{x}:f(\boldsymbol{x})=c\}$ | 等高集 level set | [U1 sec3](unit01/sec3.md) |

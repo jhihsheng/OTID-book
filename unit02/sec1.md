@@ -43,17 +43,17 @@ Points satisfying {eq}`eq-u2-fonc-int` are **stationary points** — candidates,
 
 Push the same Taylor argument one order further. Along a feasible $\boldsymbol{d}$ with $\boldsymbol{d}^{\!\top}\nabla f(\boldsymbol{x}^{*})=0$, minimality forces the quadratic term to be nonnegative（C&Z Ch. 6）— at an interior stationary point:
 
-**SONC.** $\boldsymbol{F}(\boldsymbol{x}^{*})\succeq0$（Hessian positive semidefinite）.
+**SONC.** $\boldsymbol{F}(\boldsymbol{x}^{*})\ge 0$（Hessian positive semidefinite）.
 
 Necessary is not sufficient, but a small strengthening is（C&Z Ch. 6）:
 
-**SOSC.** If $\nabla f(\boldsymbol{x}^{*})=\boldsymbol{0}$ and $\boldsymbol{F}(\boldsymbol{x}^{*})\succ0$, then $\boldsymbol{x}^{*}$ is a **strict local minimizer**.
+**SOSC.** If $\nabla f(\boldsymbol{x}^{*})=\boldsymbol{0}$ and $\boldsymbol{F}(\boldsymbol{x}^{*})>0$, then $\boldsymbol{x}^{*}$ is a **strict local minimizer**.
 
 The definiteness tests of [Unit 1](../unit01/sec2.md)（eigenvalues, Sylvester）are exactly how SONC/SOSC are checked in practice.
 
 **Worked example（a saddle: FONC passes, SONC fails）.** $f(\boldsymbol{x})=x_1^2-x_2^2$: $\nabla f=(2x_1,-2x_2)^{\!\top}=\boldsymbol{0}$ at the origin, so FONC holds. But $\boldsymbol{F}=\operatorname{diag}(2,-2)$ has eigenvalues of both signs — indefinite, SONC fails — and indeed the origin is a saddle: $f$ increases along $x_1$, decreases along $x_2$.
 
-**A sharper warning（SONC passes, still no minimum）.** $f(\boldsymbol{x})=x_1^2-x_2^4$: at the origin $\nabla f=\boldsymbol{0}$ and $\boldsymbol{F}=\operatorname{diag}(2,0)\succeq0$, so FONC *and* SONC both hold. Yet $f(0,\varepsilon)=-\varepsilon^4<0=f(\boldsymbol{0})$ for every $\varepsilon\neq0$: the origin is not a local minimizer. Necessary conditions filter candidates; only SOSC certifies（and here SOSC correctly refuses: $\boldsymbol{F}$ is not positive *definite*）.
+**A sharper warning（SONC passes, still no minimum）.** $f(\boldsymbol{x})=x_1^2-x_2^4$: at the origin $\nabla f=\boldsymbol{0}$ and $\boldsymbol{F}=\operatorname{diag}(2,0)\ge 0$, so FONC *and* SONC both hold. Yet $f(0,\varepsilon)=-\varepsilon^4<0=f(\boldsymbol{0})$ for every $\varepsilon\neq0$: the origin is not a local minimizer. Necessary conditions filter candidates; only SOSC certifies（and here SOSC correctly refuses: $\boldsymbol{F}$ is not positive *definite*）.
 
 ```{important}
 **Optimality conditions are the termination contract of every algorithm in this course.** When scipy, nlopt, or your own gradient loop（Unit 3）declares success, the test it ran is $\|\nabla f(\boldsymbol{x}^{(k)})\|\le\varepsilon$ — FONC {eq}`eq-u2-fonc-int`, operationalized with a tolerance — optionally plus a curvature check, which is SONC. An optimizer never certifies「global minimum」; it certifies「no first-order descent direction remains」. Understanding exactly what has been proven when an optimizer stops is the difference between using these tools and trusting them blindly.

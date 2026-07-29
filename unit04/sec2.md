@@ -15,7 +15,7 @@ A two-layer MLP as a computational graph. Forward（blue）: evaluate and cache 
 
 Take the two-layer regression network of the figure: $\boldsymbol{z}_1=\boldsymbol{W}_1\boldsymbol{x}+\boldsymbol{b}_1$, $\boldsymbol{h}=\sigma(\boldsymbol{z}_1)$, $\hat{y}=\boldsymbol{w}_2^{\!\top}\boldsymbol{h}+b_2$, $\ell=\tfrac12(\hat{y}-y)^2$. We want $\partial\ell/\partial$ everything. Work backwards with the chain rule（Unit 1）, defining at each stage the **error signal** $\delta=\partial\ell/\partial(\text{that stage's preactivation})$.
 
-**Output stage.** $\displaystyle \delta_2=\frac{\partial\ell}{\partial\hat{y}}=\hat{y}-y$. Since $\hat{y}$ is linear in $\boldsymbol{w}_2$ and $b_2$:
+**Output stage.** $\delta_2=\partial\ell/\partial\hat{y}=\hat{y}-y$. Since $\hat{y}$ is linear in $\boldsymbol{w}_2$ and $b_2$:
 
 $$
 \frac{\partial\ell}{\partial\boldsymbol{w}_2}=\delta_2\,\boldsymbol{h},
@@ -48,7 +48,7 @@ Backprop through $L$ layers multiplies $L$ Jacobians: schematically, the error s
 
 $$
 \boldsymbol{h}_{l+1}=\boldsymbol{h}_l+F_l(\boldsymbol{h}_l)
-\qquad\Longrightarrow\qquad
+\qquad\Rightarrow\qquad
 \frac{\partial\boldsymbol{h}_{l+1}}{\partial\boldsymbol{h}_l}=\boldsymbol{I}+\frac{\partial F_l}{\partial\boldsymbol{h}_l}.
 $$ (eq-u4-res)
 

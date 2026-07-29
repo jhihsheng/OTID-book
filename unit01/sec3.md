@@ -13,7 +13,7 @@ The chord test. (a) In a convex set every chord stays inside. (b) One escaping c
 
 ## Level sets
 
-The **level set** of $f$ at height $c$ is $S_c=\{\boldsymbol{x}:f(\boldsymbol{x})=c\}$ — the contour lines of a topographic map. For the quadratic $f(\boldsymbol{x})=\tfrac12\boldsymbol{x}^{\!\top}\boldsymbol{Q}\boldsymbol{x}$ with $\boldsymbol{Q}\succ0$, the level sets are concentric ellipses whose axes point along the eigenvectors of $\boldsymbol{Q}$, with lengths $\propto1/\sqrt{\lambda_i}$（[](#fig-u1-levelsets); this is {eq}`eq-u1-qform` drawn as a picture）. Two things to notice now and remember in Unit 3: the gradient is everywhere **perpendicular to the level set**, and the more elongated the ellipses（large $\kappa=\lambda_{\max}/\lambda_{\min}$）, the more misleading「straight downhill」becomes.
+The **level set** of $f$ at height $c$ is $S_c=\{\boldsymbol{x}:f(\boldsymbol{x})=c\}$ — the contour lines of a topographic map. For the quadratic $f(\boldsymbol{x})=\tfrac12\boldsymbol{x}^{\!\top}\boldsymbol{Q}\boldsymbol{x}$ with $\boldsymbol{Q}>0$, the level sets are concentric ellipses whose axes point along the eigenvectors of $\boldsymbol{Q}$, with lengths $\propto1/\sqrt{\lambda_i}$（[](#fig-u1-levelsets); this is {eq}`eq-u1-qform` drawn as a picture）. Two things to notice now and remember in Unit 3: the gradient is everywhere **perpendicular to the level set**, and the more elongated the ellipses（large $\kappa=\lambda_{\max}/\lambda_{\min}$）, the more misleading「straight downhill」becomes.
 
 ```{figure} ../assets/u01_levelsets.png
 :name: fig-u1-levelsets
@@ -76,7 +76,7 @@ and in mean-value form the remainder can be written exactly by evaluating $\bold
 **Exercise 1（definiteness）.** Determine whether $\boldsymbol{Q}=\begin{bmatrix}4&1&0\\1&3&1\\0&1&2\end{bmatrix}$ is positive definite.
 
 ```{dropdown} Solution
-Leading principal minors: $\Delta_1=4>0$; $\Delta_2=4\cdot3-1=11>0$; $\Delta_3=\det\boldsymbol{Q}=4(3\cdot2-1\cdot1)-1(1\cdot2-1\cdot0)+0=20-2=18>0$. By Sylvester's criterion $\boldsymbol{Q}\succ0$.
+Leading principal minors: $\Delta_1=4>0$; $\Delta_2=4\cdot3-1=11>0$; $\Delta_3=\det\boldsymbol{Q}=4(3\cdot2-1\cdot1)-1(1\cdot2-1\cdot0)+0=20-2=18>0$. By Sylvester's criterion $\boldsymbol{Q}>0$.
 ```
 
 **Exercise 2（gradient and Hessian）.** For $f(\boldsymbol{x})=3x_1^2+2x_1x_2+x_2^2-4x_1+2$, compute $\nabla f$ and $\boldsymbol{F}$.
@@ -94,7 +94,7 @@ $f(\boldsymbol{0})=0$; $\nabla f=(e^{x_1}\sin x_2,\; e^{x_1}\cos x_2)^{\!\top}\b
 **Exercise 4（stationary point）.** Find the stationary point of the $f$ in Exercise 2 and classify it.
 
 ```{dropdown} Solution
-$\nabla f=\boldsymbol{0}$: from $2x_1+2x_2=0$, $x_2=-x_1$; substituting, $6x_1-2x_1=4\Rightarrow x_1=1$, $x_2=-1$. The Hessian $\bigl[\begin{smallmatrix}6&2\\2&2\end{smallmatrix}\bigr]$ has $\Delta_1=6>0,\ \Delta_2=8>0$, hence $\boldsymbol{F}\succ0$: $(1,-1)^{\!\top}$ is a strict local minimizer — and, since a PD quadratic is convex, the global one, with $f(1,-1)=0$.（Unit 2 turns this two-step check into the formal FONC/SOSC conditions.）
+$\nabla f=\boldsymbol{0}$: from $2x_1+2x_2=0$, $x_2=-x_1$; substituting, $6x_1-2x_1=4\Rightarrow x_1=1$, $x_2=-1$. The Hessian $\bigl[\begin{smallmatrix}6&2\\2&2\end{smallmatrix}\bigr]$ has $\Delta_1=6>0,\ \Delta_2=8>0$, hence $\boldsymbol{F}>0$: $(1,-1)^{\!\top}$ is a strict local minimizer — and, since a PD quadratic is convex, the global one, with $f(1,-1)=0$.（Unit 2 turns this two-step check into the formal FONC/SOSC conditions.）
 ```
 
 ```{seealso}

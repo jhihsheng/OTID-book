@@ -1,4 +1,4 @@
-# Newton's Method in $\mathbb{R}^n$
+# Newton's Method in n Dimensions
 
 ## The ideal direction
 
@@ -10,7 +10,7 @@ q(\boldsymbol{x}^{(k)}+\boldsymbol{d})
 +\tfrac12\,\boldsymbol{d}^{\!\top}\boldsymbol{F}(\boldsymbol{x}^{(k)})\,\boldsymbol{d}
 $$
 
-has（for $\boldsymbol{F}\succ0$）the unique minimizer where $\nabla q=\boldsymbol{g}^{(k)}+\boldsymbol{F}\boldsymbol{d}=\boldsymbol{0}$. The **Newton step** solves that linear system:
+has（for $\boldsymbol{F}>0$）the unique minimizer where $\nabla q=\boldsymbol{g}^{(k)}+\boldsymbol{F}\boldsymbol{d}=\boldsymbol{0}$. The **Newton step** solves that linear system:
 
 $$
 \boldsymbol{F}(\boldsymbol{x}^{(k)})\,\boldsymbol{d}^{(k)}=-\boldsymbol{g}^{(k)},
@@ -18,7 +18,7 @@ $$
 \boldsymbol{x}^{(k+1)}=\boldsymbol{x}^{(k)}+\boldsymbol{d}^{(k)} .
 $$ (eq-u3-newton)
 
-This is the $n$-dimensional version of Unit 2's $x^{+}=x-f'/f''$, and it inherits the same reward（C&Z Ch. 9）: **quadratic convergence** — if $f$ is smooth enough near a minimizer with $\boldsymbol{F}(\boldsymbol{x}^{*})\succ0$ and $\boldsymbol{x}^{(0)}$ is close enough, the number of correct digits doubles per iteration. On the quadratic {eq}`eq-u3-quad` the model is exact and Newton lands on $\boldsymbol{x}^{*}$ in **one step**, regardless of $\kappa$（[](#fig-u3-convergence) in sec 3 shows all methods side by side）. Newton is, in the language of sec 1, steepest descent with the *perfect* preconditioner $\boldsymbol{M}=\boldsymbol{F}$.
+This is the $n$-dimensional version of Unit 2's $x^{+}=x-f'/f''$, and it inherits the same reward（C&Z Ch. 9）: **quadratic convergence** — if $f$ is smooth enough near a minimizer with $\boldsymbol{F}(\boldsymbol{x}^{*})>0$ and $\boldsymbol{x}^{(0)}$ is close enough, the number of correct digits doubles per iteration. On the quadratic {eq}`eq-u3-quad` the model is exact and Newton lands on $\boldsymbol{x}^{*}$ in **one step**, regardless of $\kappa$（[](#fig-u3-convergence) in sec 3 shows all methods side by side）. Newton is, in the language of sec 1, steepest descent with the *perfect* preconditioner $\boldsymbol{M}=\boldsymbol{F}$.
 
 ## What breaks
 
@@ -37,7 +37,7 @@ $$
 \qquad \mu_k\ge0 .
 $$ (eq-u3-lm)
 
-The **Levenberg–Marquardt modification**（C&Z Ch. 9）interpolates continuously between the two poles of this unit: $\mu_k\to0$ recovers pure Newton, while $\mu_k$ large makes $\boldsymbol{d}^{(k)}\approx-\boldsymbol{g}^{(k)}/\mu_k$ — a short steepest-descent step. Choosing $\mu_k>-\lambda_{\min}(\boldsymbol{F})$ also forces the shifted matrix positive definite, so the step is a guaranteed descent direction even where the raw Hessian is indefinite. Practical logic: try a step; if it reduces $f$, shrink $\mu$（trust the model more）; if not, grow $\mu$（retreat toward gradient descent）.
+The **Levenberg–Marquardt modification** {eq}`eq-u3-lm`（C&Z Ch. 9）interpolates continuously between the two poles of this unit: $\mu_k\to0$ recovers pure Newton, while $\mu_k$ large makes $\boldsymbol{d}^{(k)}\approx-\boldsymbol{g}^{(k)}/\mu_k$ — a short steepest-descent step. Choosing $\mu_k>-\lambda_{\min}(\boldsymbol{F})$ also forces the shifted matrix positive definite, so the step is a guaranteed descent direction even where the raw Hessian is indefinite. Practical logic: try a step; if it reduces $f$, shrink $\mu$（trust the model more）; if not, grow $\mu$（retreat toward gradient descent）.
 
 For **nonlinear least squares** $f(\boldsymbol{x})=\tfrac12\sum_i r_i(\boldsymbol{x})^2$ — spectrum fitting, for instance — the Gauss–Newton approximation replaces $\boldsymbol{F}$ by $\boldsymbol{J}^{\!\top}\boldsymbol{J}$（$\boldsymbol{J}$ the Jacobian of the residuals）, getting Newton-like steps from first derivatives only; Levenberg–Marquardt applied to it is the classic workhorse behind `scipy.optimize.least_squares`. We leave it at this one-line pointer.
 

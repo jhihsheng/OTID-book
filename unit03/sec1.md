@@ -14,7 +14,7 @@ To analyze SD we use the standard laboratory animal: the positive-definite quadr
 
 $$
 f(\boldsymbol{x})=\tfrac12\,\boldsymbol{x}^{\!\top}\boldsymbol{Q}\boldsymbol{x}-\boldsymbol{b}^{\!\top}\boldsymbol{x},
-\qquad \boldsymbol{Q}\succ0,
+\qquad \boldsymbol{Q}>0,
 $$ (eq-u3-quad)
 
 with gradient $\boldsymbol{g}=\boldsymbol{Q}\boldsymbol{x}-\boldsymbol{b}$ and minimizer $\boldsymbol{x}^{*}=\boldsymbol{Q}^{-1}\boldsymbol{b}$. Near any smooth minimum, Taylor's theorem {eq}`eq-u1-taylor` says *every* objective looks like {eq}`eq-u3-quad` with $\boldsymbol{Q}=\boldsymbol{F}(\boldsymbol{x}^{*})$ — so whatever we prove here is the asymptotic truth for smooth problems in general.
@@ -57,7 +57,7 @@ $$
 {(\boldsymbol{g}^{\!\top}\boldsymbol{Q}\boldsymbol{g})\,(\boldsymbol{g}^{\!\top}\boldsymbol{Q}^{-1}\boldsymbol{g})}.
 $$ (eq-u3-onestep)
 
-The fraction on the right is bounded below by the **Kantorovich inequality**（for any $\boldsymbol{g}\neq\boldsymbol{0}$ and $\boldsymbol{Q}\succ0$ with extreme eigenvalues $\lambda_{\min},\lambda_{\max}$; proof in C&Z Ch. 8）:
+The fraction on the right is bounded below by the **Kantorovich inequality**（for any $\boldsymbol{g}\neq\boldsymbol{0}$ and $\boldsymbol{Q}>0$ with extreme eigenvalues $\lambda_{\min},\lambda_{\max}$; proof in C&Z Ch. 8）:
 
 $$
 \frac{(\boldsymbol{g}^{\!\top}\boldsymbol{g})^{2}}

@@ -10,11 +10,11 @@ $$
 \boldsymbol{\theta}^{(k+1)}=\boldsymbol{\theta}^{(k)}-\alpha\,\hat{\boldsymbol{g}}^{(k)} .
 $$ (eq-u4-sgd)
 
-This is **stochastic gradient descent**（SGD）: steepest descent driven by a noisy compass. The step cost no longer depends on $N$ at all. The noise is partly a bug — near a minimum the iterates jitter instead of converging, which is why learning rates must eventually decay — but partly a feature: random kicks carry the iterate off saddle points and out of narrow, sharp valleys, and practice consistently finds that the minima SGD prefers generalize well. Treat that last clause as an empirical observation, not a theorem.
+This is **stochastic gradient descent**（SGD）: the steepest-descent update {eq}`eq-u3-sd`, driven by a noisy compass. The step cost no longer depends on $N$ at all. The noise is partly a bug — near a minimum the iterates jitter instead of converging, which is why learning rates must eventually decay — but partly a feature: random kicks carry the iterate off saddle points and out of narrow, sharp valleys, and practice consistently finds that the minima SGD prefers generalize well. Treat that last clause as an empirical observation, not a theorem.
 
 ## Momentum
 
-The zig-zag disease of Unit 3 sec 1 afflicts SGD too, now with noise on top. **Momentum**（the heavy-ball idea; survey in Kochenderfer & Wheeler）treats the iterate as a ball with inertia — accumulate an exponential moving average of gradients and step along it:
+The zig-zag disease of Unit 3 sec 1 afflicts the SGD update {eq}`eq-u4-sgd` too, now with noise on top. **Momentum**（the heavy-ball idea; survey in Kochenderfer & Wheeler）treats the iterate as a ball with inertia — accumulate an exponential moving average of gradients and step along it:
 
 $$
 \boldsymbol{v}^{(k+1)}=\beta\,\boldsymbol{v}^{(k)}-\alpha\,\hat{\boldsymbol{g}}^{(k)},
@@ -24,9 +24,9 @@ $$ (eq-u4-mom)
 
 with $\beta\approx0.9$. Components of the gradient that flip sign step to step（across the valley）cancel in the average; components that persist（along the valley）accumulate to an effective step up to $1/(1-\beta)=10\times$ larger. Momentum simultaneously damps oscillation, accelerates the useful direction, and averages out minibatch noise. **Nesterov's variant**（statement only）evaluates the gradient at the *look-ahead* point $\boldsymbol{\theta}+\beta\boldsymbol{v}$ rather than the current one, which yields provably better constants on convex problems and slightly better behaviour in practice.
 
-## Adaptive scaling: AdaGrad → RMSProp → Adam
+## Adaptive scaling: from AdaGrad to Adam
 
-Deep networks are wildly **anisotropic**: some parameters see large gradients, others tiny ones, and one global $\alpha$ cannot fit both. The adaptive family gives *each coordinate its own step size*, learned from the gradient history. **AdaGrad** divides by the root of the *accumulated* squared gradients — principled, but the accumulator only grows, so the learning rate decays to zero and training stalls. **RMSProp** repairs this with an exponential moving average instead of a sum. **Adam**（Kingma & Ba, ICLR 2015）combines RMSProp's second-moment scaling with a momentum-style first moment, plus one subtle fix. With $\odot$ elementwise:
+Deep networks are wildly **anisotropic**: some parameters see large gradients, others tiny ones, and one global $\alpha$ cannot fit both. The adaptive family gives *each coordinate its own step size*, learned from the gradient history. **AdaGrad** divides by the root of the *accumulated* squared gradients — principled, but the accumulator only grows, so the learning rate decays to zero and training stalls. **RMSProp** repairs this with an exponential moving average instead of a sum. **Adam**（Kingma & Ba, ICLR 2015）combines RMSProp's second-moment scaling with a momentum-style first moment（compare {eq}`eq-u4-mom`）, plus one subtle fix. With $\odot$ elementwise:
 
 $$
 \begin{aligned}

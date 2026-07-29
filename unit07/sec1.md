@@ -15,7 +15,7 @@ where $\boldsymbol{x}\in\mathbb{R}^{N}$ holds the field degrees of freedom（$N\
 $$
 \boldsymbol{A}\,\frac{\partial\boldsymbol{x}}{\partial p_i}
 =-\frac{\partial\boldsymbol{A}}{\partial p_i}\,\boldsymbol{x}
-\qquad\Longrightarrow\qquad
+\qquad\Rightarrow\qquad
 \frac{\partial\boldsymbol{x}}{\partial p_i}
 =-\boldsymbol{A}^{-1}\frac{\partial\boldsymbol{A}}{\partial p_i}\,\boldsymbol{x}.
 $$ (eq-u7-dxdp)

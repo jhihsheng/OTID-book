@@ -21,7 +21,7 @@ $$
 \boldsymbol{d}^{(k+1)}=-\boldsymbol{g}^{(k+1)}+\beta_k\,\boldsymbol{d}^{(k)},
 $$ (eq-u3-cgdir)
 
-and on a quadratic this single correction automatically yields conjugacy to *all* earlier directions. One iteration: exact line search $\alpha_k=-\boldsymbol{g}^{(k)\top}\boldsymbol{d}^{(k)}/\boldsymbol{d}^{(k)\top}\boldsymbol{Q}\boldsymbol{d}^{(k)}$; step; new gradient; then
+and on a quadratic the single correction in {eq}`eq-u3-cgdir` automatically yields conjugacy to *all* earlier directions. One iteration: exact line search $\alpha_k=-\boldsymbol{g}^{(k)\top}\boldsymbol{d}^{(k)}/\boldsymbol{d}^{(k)\top}\boldsymbol{Q}\boldsymbol{d}^{(k)}$; step; new gradient; then
 
 $$
 \beta_k^{\mathrm{FR}}=\frac{\boldsymbol{g}^{(k+1)\top}\boldsymbol{g}^{(k+1)}}{\boldsymbol{g}^{(k)\top}\boldsymbol{g}^{(k)}}
@@ -80,7 +80,7 @@ $$
 -\frac{\Delta\boldsymbol{x}\,\Delta\boldsymbol{g}^{\!\top}\boldsymbol{H}_k+\boldsymbol{H}_k\Delta\boldsymbol{g}\,\Delta\boldsymbol{x}^{\!\top}}{\Delta\boldsymbol{g}^{\!\top}\Delta\boldsymbol{x}} .
 $$ (eq-u3-bfgs)
 
-Both rank-two updates **preserve positive definiteness** whenever $\Delta\boldsymbol{g}^{\!\top}\Delta\boldsymbol{x}>0$ — a condition a proper line search guarantees — so every direction $-\boldsymbol{H}_k\boldsymbol{g}^{(k)}$ is a certified descent direction. On quadratics with exact line searches both reach the exact solution in $n$ steps（they secretly generate conjugate directions）; on general problems both converge superlinearly, and decades of practice crowned **BFGS** the default: it self-corrects bad Hessian information where DFP lets it linger. When even storing the $n\times n$ matrix $\boldsymbol{H}$ is too much, **L-BFGS** keeps only the last $m\approx5$–$20$ pairs $(\Delta\boldsymbol{x},\Delta\boldsymbol{g})$ and applies $\boldsymbol{H}_k$ implicitly — this is the `L-BFGS-B` of scipy and the workhorse inside `nlopt` that will drive the adjoint-based photonics designs of Unit 7.
+Both rank-two updates {eq}`eq-u3-dfp`–{eq}`eq-u3-bfgs` **preserve positive definiteness** whenever $\Delta\boldsymbol{g}^{\!\top}\Delta\boldsymbol{x}>0$ — a condition a proper line search guarantees — so every direction $-\boldsymbol{H}_k\boldsymbol{g}^{(k)}$ is a certified descent direction. On quadratics with exact line searches both reach the exact solution in $n$ steps（they secretly generate conjugate directions）; on general problems both converge superlinearly, and decades of practice crowned **BFGS** the default: it self-corrects bad Hessian information where DFP lets it linger. When even storing the $n\times n$ matrix $\boldsymbol{H}$ is too much, **L-BFGS** keeps only the last $m\approx5$–$20$ pairs $(\Delta\boldsymbol{x},\Delta\boldsymbol{g})$ and applies $\boldsymbol{H}_k$ implicitly — this is the `L-BFGS-B` of scipy and the workhorse inside `nlopt` that will drive the adjoint-based photonics designs of Unit 7.
 
 ```{figure} ../assets/u03_convergence.png
 :name: fig-u3-convergence

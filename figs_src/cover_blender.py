@@ -209,70 +209,188 @@ def chip_material():
     nt.links.new(mixf.outputs["Shader"], out.inputs["Surface"])
     return mat
 
-add_box((0, 1.0, -0.06), (13.5, 13.0, 0.06), chip_material(), name="chip")
+
+# ---------------------------------------------------------------- light beams: bright core + soft transparent halo
+def halo_material(name, color, strength, transparency=0.72):
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = True
+    nt = mat.node_tree
+    nt.nodes.clear()
+    out = nt.nodes.new("ShaderNodeOutputMaterial")
+    em = nt.nodes.new("ShaderNodeEmission")
+    em.inputs["Color"].default_value = color
+    em.inputs["Strength"].default_value = strength
+    tr = nt.nodes.new("ShaderNodeBsdfTransparent")
+    mx = nt.nodes.new("ShaderNodeMixShader")
+    mx.inputs["Fac"].default_value = 1.0 - transparency
+    nt.links.new(tr.outputs["BSDF"], mx.inputs[1])
+    nt.links.new(em.outputs["Emission"], mx.inputs[2])
+    nt.links.new(mx.outputs["Shader"], out.inputs["Surface"])
+    return mat
+
+def beam(name, pts, color, core_r=0.009, halo_r=0.05, core_s=14.0, halo_s=1.2,
+         core_color=None):
+    """Nature-Photonics-style beam: razor core + inner glow + wide soft bloom."""
+    core = tube_from_points(name + "_core", pts, core_r,
+                            glow(name + "_core_m", core_color or IVORY, core_s))
+    core.visible_shadow = False
+    h1 = tube_from_points(name + "_h1", pts, halo_r,
+                          halo_material(name + "_h1_m", color, halo_s, transparency=0.75))
+    h1.visible_shadow = False
+    h2 = tube_from_points(name + "_h2", pts, halo_r * 2.6,
+                          halo_material(name + "_h2_m", color, halo_s * 0.30, transparency=0.90))
+    h2.visible_shadow = False
+    return core
+
+def flash(name, loc, color, r=0.05, s=8.0):
+    """Blooming impact point."""
+    add_sphere(loc, r, glow(name + "_c", srgb("#fff3d0"), s), name=name)
+    for rr, ss, tr in [(r * 2.4, s * 0.18, 0.78), (r * 5.0, s * 0.05, 0.92)]:
+        ob = add_sphere(loc, rr, halo_material(f"{name}_{rr:.2f}", color, ss, transparency=tr),
+                        name=name + "_h")
+        ob.visible_shadow = False
+
+def parent_group(before_names, name, loc, rot_deg, scl):
+    """Parent every object created since `before_names` to a transformed empty."""
+    emp = bpy.data.objects.new(name, None)
+    scene.collection.objects.link(emp)
+    emp.location = loc
+    emp.rotation_euler = (math.radians(rot_deg[0]), math.radians(rot_deg[1]), math.radians(rot_deg[2]))
+    emp.scale = (scl, scl, scl)
+    for ob in list(bpy.data.objects):
+        if ob.name in before_names or ob is emp:
+            continue
+        if ob.parent is None and ob.type in {"MESH", "CURVE"}:
+            ob.parent = emp
+    return emp
 
 # ---------------------------------------------------------------- chip feature 1: TO waveguide bend (front-left)
-to_cx, to_cy = -3.6, -3.1
-add_box((to_cx, to_cy, 0.035), (1.25, 1.25, 0.035), plain("to_plate", srgb("#141b2b"), 0.5, 0.3), name="to_plate")
-M_BLOB = plain("to_blob", srgb("#1f4b57"), 0.35)
-try:
-    b = M_BLOB.node_tree.nodes["Principled BSDF"]
-    b.inputs["Emission Color"].default_value = srgb("#2fbcd6")
-    b.inputs["Emission Strength"].default_value = 0.35
-except KeyError:
-    pass
-blob_spots = [(-0.55, 0.42, 0.16, 0.11), (-0.15, 0.55, 0.13, 0.09), (0.35, 0.4, 0.19, 0.12),
-              (0.72, 0.05, 0.14, 0.10), (-0.62, -0.05, 0.12, 0.09), (-0.2, 0.05, 0.2, 0.13),
-              (0.3, -0.12, 0.12, 0.08), (-0.45, -0.5, 0.15, 0.10), (0.05, -0.55, 0.17, 0.11),
-              (0.55, -0.52, 0.11, 0.08), (0.85, 0.55, 0.10, 0.07), (-0.85, 0.6, 0.11, 0.08)]
-for k, (bx_, by_, br, bh) in enumerate(blob_spots):
-    add_sphere((to_cx + bx_, to_cy + by_, 0.07 + bh * 0.35), br, M_BLOB,
-               name=f"blob{k}", scale=(1.0, 0.85, bh / br))
-M_WG = glow("waveguide", CYAN, 2.2)
-add_box((to_cx - 1.95, to_cy + 0.42, 0.075), (0.75, 0.045, 0.02), M_WG, name="wg_in")
-light_path = [(to_cx - 1.25, to_cy + 0.42, 0.085), (to_cx - 0.6, to_cy + 0.42, 0.09),
-              (to_cx - 0.15, to_cy + 0.28, 0.10), (to_cx + 0.25, to_cy + 0.12, 0.10),
-              (to_cx + 0.35, to_cy - 0.25, 0.10), (to_cx + 0.3, to_cy - 0.7, 0.09),
-              (to_cx + 0.3, to_cy - 1.35, 0.085)]
-tube_from_points("light_bend", light_path, 0.034, glow("light_bend_m", CYAN2, 6.0))
-add_box((to_cx + 0.3, to_cy - 1.75, 0.075), (0.045, 0.75, 0.02), M_WG, name="wg_out")
+# real-device look (cf. published TO polarization splitters): a pale silicon slab
+# with organic void cutouts and a 90-degree bend channel; the routed field glows
+# hot orange like a simulated intensity map
+_before = set(o.name for o in bpy.data.objects)
+# course-style bend (cf. 08_OTID_meep_adjoint): square design region whose
+# optimized density forms a diagonal band; input waveguide left, output top
+add_box((0, 0, 0.030), (1.40, 1.40, 0.030), plain("to_sub", srgb("#243654"), 0.45, 0.35), name="to_sub")
+TO_HALF = 1.1
+TO_N = 36
+def to_density(u, v):
+    """True where silicon sits: main diagonal band + faint side stripes + dither."""
+    d = (v - u) / math.sqrt(2)               # signed distance to the main diagonal
+    wob = 0.06 * math.sin(4.2 * (u + v) + 1.2) + 0.03 * math.sin(9.0 * (u - v))
+    if abs(d + wob) < 0.26:
+        return True
+    if abs(d + wob - 0.62) < 0.085 and (u + v) > -0.8:
+        return True
+    if abs(d + wob + 0.62) < 0.085 and (u + v) < 0.8:
+        return True
+    return False
+cell = 2 * TO_HALF / TO_N
+pverts, pfaces = [], []
+z0, z1 = 0.062, 0.118
+for j in range(TO_N):
+    for i in range(TO_N):
+        u = -TO_HALF + (i + 0.5) * cell
+        v = -TO_HALF + (j + 0.5) * cell
+        if not to_density(u, v):
+            continue
+        x0, x1 = u - cell * 0.5, u + cell * 0.5
+        y0_, y1_ = v - cell * 0.5, v + cell * 0.5
+        b0 = len(pverts)
+        pverts += [(x0, y0_, z0), (x1, y0_, z0), (x1, y1_, z0), (x0, y1_, z0),
+                   (x0, y0_, z1), (x1, y0_, z1), (x1, y1_, z1), (x0, y1_, z1)]
+        pfaces += [(b0, b0 + 1, b0 + 2, b0 + 3), (b0 + 4, b0 + 5, b0 + 6, b0 + 7),
+                   (b0, b0 + 1, b0 + 5, b0 + 4), (b0 + 1, b0 + 2, b0 + 6, b0 + 5),
+                   (b0 + 2, b0 + 3, b0 + 7, b0 + 6), (b0 + 3, b0, b0 + 4, b0 + 7)]
+M_SI = plain("to_si", srgb("#7f95b5"), 0.4, 0.15)
+to_mesh = bpy.data.meshes.new("to_pixels")
+to_mesh.from_pydata(pverts, [], pfaces)
+to_mesh.update()
+to_ob = bpy.data.objects.new("to_pixels", to_mesh)
+to_ob.data.materials.append(M_SI)
+scene.collection.objects.link(to_ob)
+# waveguide stubs: in from the left (v=-0.78), out at the top (u=+0.78)
+add_box((-1.42, -0.78, 0.09), (0.35, 0.10, 0.028), M_SI, name="wg_in")
+add_box((0.78, 1.42, 0.09), (0.10, 0.35, 0.028), M_SI, name="wg_out")
+# cyan light routed along the diagonal
+bend_pts = [(-1.85, -0.78, 0.135), (-1.05, -0.78, 0.135), (-0.45, -0.62, 0.14),
+            (0.1, -0.15, 0.14), (0.55, 0.45, 0.14), (0.78, 1.05, 0.135), (0.78, 1.85, 0.135)]
+beam("light_bend", bend_pts, CYAN2, core_r=0.018, halo_r=0.07,
+     core_s=12.0, halo_s=1.5, core_color=srgb("#e8fbff"))
+flash("bend_hot", (0.1, -0.15, 0.15), CYAN2, r=0.045, s=5.0)
+
+parent_group(_before, "grp_to", (-7.5, 9.6, 0.1), (40, 0, 8), 1.1)
 
 # ---------------------------------------------------------------- chip feature 2: 1D grating + diffraction (front-right)
-gr_cx, gr_cy = 4.3, -3.2
-M_BAR = plain("grating_bar", srgb("#2a3a54"), 0.3, 0.7)
-try:
-    b = M_BAR.node_tree.nodes["Principled BSDF"]
-    b.inputs["Emission Color"].default_value = srgb("#2fbcd6")
-    b.inputs["Emission Strength"].default_value = 0.18
-except KeyError:
-    pass
-for k in range(11):
-    add_box((gr_cx - 0.8 + k * 0.16, gr_cy, 0.10), (0.032, 0.55, 0.10), M_BAR, name=f"grat{k}")
-tube_from_points("gr_in", [(gr_cx - 1.9, gr_cy - 1.5, 1.25), (gr_cx - 0.15, gr_cy - 0.05, 0.22)],
-                 0.024, glow("gr_in_m", GOLD, 3.5))
-for k, (dx, dz) in enumerate([(-0.85, 1.15), (0.05, 1.45), (0.95, 1.15)]):
-    tube_from_points(f"gr_out{k}", [(gr_cx, gr_cy, 0.22), (gr_cx + dx, gr_cy + 1.15, dz)],
-                     0.016, glow(f"gr_out{k}_m", GOLD, 2.2))
+_before = set(o.name for o in bpy.data.objects)
+# 10-layer thin-film filter (labs/tmm mini-project): broadband light in, blue out
+M_LO = plain("flt_lo", srgb("#cfd9ea"), 0.35, 0.1)
+M_HI = plain("flt_hi", srgb("#33507a"), 0.3, 0.4)
+for k in range(10):
+    add_box((0, 0, 0.05 + k * 0.062), (0.62, 0.42, 0.026), M_LO if k % 2 == 0 else M_HI, name=f"flt{k}")
+flt_top = 0.05 + 9 * 0.062 + 0.026
+# broadband (warm-white) incidence onto the top face
+beam("flt_in", [(-1.15, -0.35, flt_top + 2.0), (-0.12, -0.04, flt_top + 0.02)],
+     srgb("#f2ead8"), core_r=0.013, halo_r=0.055, core_s=10.0, halo_s=1.1,
+     core_color=srgb("#fffdf4"))
+flash("flt_hit", (-0.1, -0.03, flt_top + 0.03), srgb("#f2ead8"), r=0.05, s=6.0)
+# faint reflected remainder + strong transmitted blue
+beam("flt_ref", [(-0.1, -0.03, flt_top + 0.02), (0.75, -0.28, flt_top + 1.15)],
+     srgb("#e8d8c0"), core_r=0.005, halo_r=0.02, core_s=2.0, halo_s=0.3)
+beam("flt_out", [(-0.1, -0.03, 0.05), (0.55, 0.2, -1.75)],
+     srgb("#3f6dff"), core_r=0.013, halo_r=0.06, core_s=10.0, halo_s=1.5,
+     core_color=srgb("#cfe0ff"))
 
-# ---------------------------------------------------------------- chip feature 3: Ising spin array (mid-left)
-sp_cx, sp_cy = -1.6, -4.4
-M_PIN = plain("pin", srgb("#33415c"), 0.35, 0.6)
-try:
-    b = M_PIN.node_tree.nodes["Principled BSDF"]
-    b.inputs["Emission Color"].default_value = srgb("#22364f")
-    b.inputs["Emission Strength"].default_value = 0.25
-except KeyError:
-    pass
-M_UP = glow("spin_up", GOLD, 2.5)
-M_DN = glow("spin_dn", ROSE, 1.6)
-updown = [1, 0, 1, 1, 0, 0, 1, 0, 1, 1, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1]
-for j in range(5):
-    for i in range(5):
-        px, py = sp_cx + i * 0.42, sp_cy + j * 0.42
-        up = updown[j * 5 + i]
-        h = 0.16 if up else 0.08
-        add_cyl((px, py, h / 2), 0.05, h, M_PIN, name=f"pin{i}_{j}", vertices=16)
-        add_sphere((px, py, h + 0.035), 0.045, M_UP if up else M_DN, name=f"tip{i}_{j}")
+parent_group(_before, "grp_filter", (6.8, 9.6, 1.9), (35, 0, -10), 1.3)
+
+# ---------------------------------------------------------------- chip feature 3: binary-phase OPA
+# the course QA mini-project: a 1D optical phased array with a 0/pi binary phase
+# profile, its beams interfering into a steered main lobe toward the target
+_before = set(o.name for o in bpy.data.objects)
+add_box((0, 0, 0.045), (1.05, 0.42, 0.045), plain("opa_base", srgb("#182338"), 0.4, 0.5), name="opa_base")
+PHASES = [0, 1, 0, 0, 1, 0, 1, 1]
+M_PH0 = glow("ph0", GOLD, 2.2)
+M_PH1 = glow("ph1", ROSE, 2.2)
+conv = (0.55, 0.0, 1.7)
+opa_target = (2.35, 0.0, 3.55)
+for k, ph in enumerate(PHASES):
+    ex = -0.79 + k * 0.225
+    add_box((ex, 0, 0.115), (0.075, 0.11, 0.055), plain(f"em{k}", srgb("#2c3c5c"), 0.35, 0.5), name=f"em{k}")
+    add_box((ex, 0, 0.155), (0.055, 0.08, 0.012), M_PH0 if ph == 0 else M_PH1, name=f"emt{k}")
+    beam(f"opa_b{k}", [(ex, 0, 0.17), conv], srgb("#b28bff"),
+         core_r=0.006, halo_r=0.026, core_s=6.0, halo_s=0.6)
+# the rays merge into one steered main lobe (no burst at the crossing)
+beam("opa_main", [(0.42, 0.0, 1.5), opa_target], srgb("#b28bff"), core_r=0.016, halo_r=0.07,
+     core_s=15.0, halo_s=1.8, core_color=srgb("#efe6ff"))
+import mathutils as _mu
+_dirv = (_mu.Vector(opa_target) - _mu.Vector(conv)).normalized()
+for frac, arc_r in [(0.40, 0.20), (0.62, 0.30), (0.82, 0.42)]:
+    cen = _mu.Vector(conv) + (_mu.Vector(opa_target) - _mu.Vector(conv)) * frac
+    side = _dirv.cross(_mu.Vector((0, -1, 0))).normalized()
+    up2 = _dirv.cross(side).normalized()
+    pts = []
+    for a in [i / 10 for i in range(11)]:
+        th = (a - 0.5) * 2.4
+        pp = cen + side * (arc_r * math.sin(th)) + up2 * (arc_r * math.cos(th)) * 0.9
+        pts.append((pp.x, pp.y, pp.z))
+    arc = tube_from_points(f"wf_{frac}", pts, 0.008,
+                           halo_material(f"wf_m_{frac}", srgb("#b28bff"), 1.6, transparency=0.55))
+    arc.visible_shadow = False
+# Ising spin row: the binary phase profile as up/down spins under the emitters
+M_SUP = glow("spin_up_m", GOLD, 2.4)
+M_SDN = glow("spin_dn_m", ROSE, 2.4)
+for k, ph in enumerate(PHASES):
+    ex = -0.79 + k * 0.225
+    up = (ph == 0)
+    mat = M_SUP if up else M_SDN
+    z0s, z1s = (-0.62, -0.34) if up else (-0.34, -0.62)
+    tube_from_points(f"spin_shaft{k}", [(ex, 0.0, z0s), (ex, 0.0, z1s)], 0.016, mat)
+    bpy.ops.mesh.primitive_cone_add(radius1=0.05, depth=0.10,
+                                    location=(ex, 0.0, z1s),
+                                    rotation=(0, 0, 0) if up else (math.radians(180), 0, 0))
+    tip = bpy.context.object
+    tip.data.materials.append(mat)
+parent_group(_before, "grp_opa", (0.0, 9.8, 0.55), (30, 0, -2), 1.2)
 
 # ---------------------------------------------------------------- holographic landscape
 def holo_material():
@@ -284,16 +402,38 @@ def holo_material():
     geo = nt.nodes.new("ShaderNodeNewGeometry")
     sep = nt.nodes.new("ShaderNodeSeparateXYZ")
     nt.links.new(geo.outputs["Position"], sep.inputs["Vector"])
-    # contour lines: bright cyan bands of constant z
-    mul = nt.nodes.new("ShaderNodeMath"); mul.operation = "MULTIPLY"
-    mul.inputs[1].default_value = 6.0
-    nt.links.new(sep.outputs["Z"], mul.inputs[0])
-    fr = nt.nodes.new("ShaderNodeMath"); fr.operation = "FRACT"
-    nt.links.new(mul.outputs[0], fr.inputs[0])
-    lt = nt.nodes.new("ShaderNodeMath"); lt.operation = "LESS_THAN"
-    lt.inputs[1].default_value = 0.055
-    nt.links.new(fr.outputs[0], lt.inputs[0])
-    # sparse graph-paper grid in x and y
+    # thermal height gradient
+    zmap = nt.nodes.new("ShaderNodeMapRange")
+    zmap.inputs["From Min"].default_value = HOLO_Z
+    zmap.inputs["From Max"].default_value = HOLO_Z + 2.7
+    nt.links.new(sep.outputs["Z"], zmap.inputs["Value"])
+    zramp = nt.nodes.new("ShaderNodeValToRGB")
+    zramp.color_ramp.elements[0].position = 0.0
+    zramp.color_ramp.elements[0].color = srgb("#173a8a")
+    zramp.color_ramp.elements[1].position = 1.0
+    zramp.color_ramp.elements[1].color = srgb("#ff5d3a")
+    for pos, col in [(0.30, "#00b4d8"), (0.52, "#3fd68a"), (0.72, "#ffd166"), (0.88, "#ff9b42")]:
+        el = zramp.color_ramp.elements.new(pos)
+        el.color = srgb(col)
+    nt.links.new(zmap.outputs["Result"], zramp.inputs["Fac"])
+    # translucent film with capped fresnel glow
+    fres = nt.nodes.new("ShaderNodeLayerWeight")
+    fres.inputs["Blend"].default_value = 0.35
+    fstr = nt.nodes.new("ShaderNodeMapRange")
+    fstr.inputs["From Min"].default_value = 0.0
+    fstr.inputs["From Max"].default_value = 1.0
+    fstr.inputs["To Min"].default_value = 0.4
+    fstr.inputs["To Max"].default_value = 1.25
+    nt.links.new(fres.outputs["Facing"], fstr.inputs["Value"])
+    film_em = nt.nodes.new("ShaderNodeEmission")
+    nt.links.new(zramp.outputs["Color"], film_em.inputs["Color"])
+    nt.links.new(fstr.outputs["Result"], film_em.inputs["Strength"])
+    tr1 = nt.nodes.new("ShaderNodeBsdfTransparent")
+    film = nt.nodes.new("ShaderNodeMixShader")
+    film.inputs["Fac"].default_value = 0.55
+    nt.links.new(tr1.outputs["BSDF"], film.inputs[1])
+    nt.links.new(film_em.outputs["Emission"], film.inputs[2])
+    # thin translucent purple grid
     def gridband(axis_out):
         dv = nt.nodes.new("ShaderNodeMath"); dv.operation = "DIVIDE"
         dv.inputs[1].default_value = 0.8
@@ -301,7 +441,7 @@ def holo_material():
         fr2 = nt.nodes.new("ShaderNodeMath"); fr2.operation = "FRACT"
         nt.links.new(dv.outputs[0], fr2.inputs[0])
         lt2 = nt.nodes.new("ShaderNodeMath"); lt2.operation = "LESS_THAN"
-        lt2.inputs[1].default_value = 0.035
+        lt2.inputs[1].default_value = 0.020
         nt.links.new(fr2.outputs[0], lt2.inputs[0])
         return lt2
     gx = gridband(sep.outputs["X"])
@@ -309,32 +449,85 @@ def holo_material():
     gmax = nt.nodes.new("ShaderNodeMath"); gmax.operation = "MAXIMUM"
     nt.links.new(gx.outputs[0], gmax.inputs[0])
     nt.links.new(gy.outputs[0], gmax.inputs[1])
-    gdim = nt.nodes.new("ShaderNodeMath"); gdim.operation = "MULTIPLY"
-    gdim.inputs[1].default_value = 0.45
-    nt.links.new(gmax.outputs[0], gdim.inputs[0])
-    combined = nt.nodes.new("ShaderNodeMath"); combined.operation = "MAXIMUM"
-    nt.links.new(lt.outputs[0], combined.inputs[0])
-    nt.links.new(gdim.outputs[0], combined.inputs[1])
-    em_line = nt.nodes.new("ShaderNodeEmission")
-    em_line.inputs["Color"].default_value = CYAN2
-    em_line.inputs["Strength"].default_value = 2.4
-    # translucent navy film between the lines
-    film = nt.nodes.new("ShaderNodeBsdfPrincipled")
-    film.inputs["Base Color"].default_value = srgb("#10263a")
-    film.inputs["Roughness"].default_value = 0.6
-    try:
-        film.inputs["Alpha"].default_value = 0.12
-        film.inputs["Emission Color"].default_value = srgb("#15374f")
-        film.inputs["Emission Strength"].default_value = 0.10
-    except KeyError:
-        pass
-    mixs = nt.nodes.new("ShaderNodeMixShader")
-    nt.links.new(combined.outputs[0], mixs.inputs["Fac"])
-    nt.links.new(film.outputs["BSDF"], mixs.inputs[1])
-    nt.links.new(em_line.outputs["Emission"], mixs.inputs[2])
-    nt.links.new(mixs.outputs["Shader"], out.inputs["Surface"])
-    mat.blend_method = "BLEND"
+    gscale = nt.nodes.new("ShaderNodeMath"); gscale.operation = "MULTIPLY"
+    gscale.inputs[1].default_value = 0.85
+    nt.links.new(gmax.outputs[0], gscale.inputs[0])
+    grid_em = nt.nodes.new("ShaderNodeEmission")
+    grid_em.inputs["Color"].default_value = srgb("#b78fe0")
+    grid_em.inputs["Strength"].default_value = 2.0
+    tr2 = nt.nodes.new("ShaderNodeBsdfTransparent")
+    grid_sh = nt.nodes.new("ShaderNodeMixShader")
+    grid_sh.inputs["Fac"].default_value = 0.65
+    nt.links.new(tr2.outputs["BSDF"], grid_sh.inputs[1])
+    nt.links.new(grid_em.outputs["Emission"], grid_sh.inputs[2])
+    chain1 = nt.nodes.new("ShaderNodeMixShader")
+    nt.links.new(gscale.outputs[0], chain1.inputs["Fac"])
+    nt.links.new(film.outputs["Shader"], chain1.inputs[1])
+    nt.links.new(grid_sh.outputs["Shader"], chain1.inputs[2])
+    # light-blue contour lines with slope-compensated (constant screen) width
+    nrm = nt.nodes.new("ShaderNodeSeparateXYZ")
+    nt.links.new(geo.outputs["Normal"], nrm.inputs["Vector"])
+    nz2 = nt.nodes.new("ShaderNodeMath"); nz2.operation = "MULTIPLY"
+    nt.links.new(nrm.outputs["Z"], nz2.inputs[0])
+    nt.links.new(nrm.outputs["Z"], nz2.inputs[1])
+    one_m = nt.nodes.new("ShaderNodeMath"); one_m.operation = "SUBTRACT"
+    one_m.inputs[0].default_value = 1.0
+    nt.links.new(nz2.outputs[0], one_m.inputs[1])
+    root = nt.nodes.new("ShaderNodeMath"); root.operation = "SQRT"
+    nt.links.new(one_m.outputs[0], root.inputs[0])
+    nzc = nt.nodes.new("ShaderNodeMath"); nzc.operation = "MAXIMUM"
+    nzc.inputs[1].default_value = 0.2
+    nt.links.new(nrm.outputs["Z"], nzc.inputs[0])
+    tanv = nt.nodes.new("ShaderNodeMath"); tanv.operation = "DIVIDE"
+    nt.links.new(root.outputs[0], tanv.inputs[0])
+    nt.links.new(nzc.outputs[0], tanv.inputs[1])
+    tmul = nt.nodes.new("ShaderNodeMath"); tmul.operation = "MULTIPLY"
+    tmul.inputs[1].default_value = 0.10
+    nt.links.new(tanv.outputs[0], tmul.inputs[0])
+    tmin = nt.nodes.new("ShaderNodeMath"); tmin.operation = "MINIMUM"
+    tmin.inputs[1].default_value = 0.15
+    nt.links.new(tmul.outputs[0], tmin.inputs[0])
+    thr = nt.nodes.new("ShaderNodeMath"); thr.operation = "MAXIMUM"
+    thr.inputs[1].default_value = 0.014
+    nt.links.new(tmin.outputs[0], thr.inputs[0])
+    cmul = nt.nodes.new("ShaderNodeMath"); cmul.operation = "MULTIPLY"
+    cmul.inputs[1].default_value = 6.0
+    nt.links.new(sep.outputs["Z"], cmul.inputs[0])
+    cfr = nt.nodes.new("ShaderNodeMath"); cfr.operation = "FRACT"
+    nt.links.new(cmul.outputs[0], cfr.inputs[0])
+    cmask = nt.nodes.new("ShaderNodeMath"); cmask.operation = "LESS_THAN"
+    nt.links.new(cfr.outputs[0], cmask.inputs[0])
+    nt.links.new(thr.outputs[0], cmask.inputs[1])
+    cont_em = nt.nodes.new("ShaderNodeEmission")
+    cont_em.inputs["Color"].default_value = srgb("#9fd0ee")
+    cont_em.inputs["Strength"].default_value = 2.4
+    tr3 = nt.nodes.new("ShaderNodeBsdfTransparent")
+    cont_sh = nt.nodes.new("ShaderNodeMixShader")
+    cont_sh.inputs["Fac"].default_value = 0.80
+    nt.links.new(tr3.outputs["BSDF"], cont_sh.inputs[1])
+    nt.links.new(cont_em.outputs["Emission"], cont_sh.inputs[2])
+    chain2 = nt.nodes.new("ShaderNodeMixShader")
+    nt.links.new(cmask.outputs[0], chain2.inputs["Fac"])
+    nt.links.new(chain1.outputs["Shader"], chain2.inputs[1])
+    nt.links.new(cont_sh.outputs["Shader"], chain2.inputs[2])
+    # edge dissolve baked as a vertex attribute
+    fattr = nt.nodes.new("ShaderNodeAttribute")
+    fattr.attribute_name = "fade"
+    tr4 = nt.nodes.new("ShaderNodeBsdfTransparent")
+    final = nt.nodes.new("ShaderNodeMixShader")
+    nt.links.new(fattr.outputs["Fac"], final.inputs["Fac"])
+    nt.links.new(tr4.outputs["BSDF"], final.inputs[1])
+    nt.links.new(chain2.outputs["Shader"], final.inputs[2])
+    nt.links.new(final.outputs["Shader"], out.inputs["Surface"])
     return mat
+
+def alpha_fade(x, y):
+    """Wider dissolve band so the panel melts into space with no hard border."""
+    def s(t):
+        t = max(0.0, min(1.0, t))
+        return t * t * (3 - 2 * t)
+    return (s((x - HX0) / 2.4) * s((HX1 - x) / 2.4) *
+            s((y - HY0) / 2.4) * s((HY1 - y) / 2.4))
 
 NX, NY = 200, 130
 X0, X1, Y0, Y1 = HX0, HX1, HY0, HY1
@@ -349,195 +542,82 @@ for j in range(NY):
         a = j * (NX + 1) + i
         faces.append((a, a + 1, a + NX + 2, a + NX + 1))
 holo = make_mesh("holo_terrain", verts, faces, holo_material())
-
-# hologram projector beams from the chip corners up to the terrain
-M_PROJ = glow("proj", srgb("#1b3f52"), 0.6)
-for (px, py) in [(-6.0, -1.4), (6.9, -1.4), (-6.0, 7.0), (6.9, 7.0)]:
-    add_cyl((px, py, 0.05), 0.10, 0.10, plain("projbase", srgb("#182238"), 0.4, 0.6), name="projbase")
-    tube_from_points("projbeam", [(px, py, 0.1), (px * 0.95, py * 0.95 + 0.2, HOLO_Z + 0.25)],
-                     0.012, M_PROJ)
+fade_attr = holo.data.color_attributes.new(name="fade", type="FLOAT_COLOR", domain="POINT")
+for _i, (_x, _y, _z) in enumerate(verts):
+    _f = alpha_fade(_x, _y)
+    fade_attr.data[_i].color = (_f, _f, _f, 1.0)
 
 # ---------------------------------------------------------------- trajectory on the hologram
 def hz_at(x, y):
     return HOLO_Z + height(x, y)
 
-# lead-in: from the TO device's output on the chip up onto the hologram panel
-lead_in = [(to_cx + 0.3, to_cy - 1.3, 0.12), (to_cx - 0.5, to_cy - 0.2, 0.35),
-           (-5.6, -1.6, HOLO_Z + 0.15), (-5.3, -0.9, hz_at(-5.3, -0.9) + 0.05)]
-tube_from_points("lead_in", lead_in, 0.020, glow("lead_in_m", GOLD, 3.0))
-
-traj_pts = []
-climb1 = [(-5.3, -0.9), (-4.6, -0.75), (-3.9, -0.6), (-3.3, -0.45), (-2.8, -0.3), (-2.4, -0.1)]
-for x, y in climb1:
-    traj_pts.append((x, y, hz_at(x, y) + 0.05))
-for t in [i / 12 for i in range(1, 12)]:
-    x = -2.4 + t * 2.8
-    y = -0.1 + t * 0.5
-    base = hz_at(-2.4, -0.1) * (1 - t) + hz_at(0.4, 0.4) * t
-    traj_pts.append((x, y, base + 0.95 * math.sin(math.pi * t) + 0.08))
-climb2 = [(0.4, 0.4), (1.0, 0.45), (1.6, 0.5), (2.05, 0.52)]
-for x, y in climb2:
-    traj_pts.append((x, y, hz_at(x, y) + 0.05))
-tube_from_points("trajectory", traj_pts, 0.030, glow("traj_m", GOLD, 5.0))
-M_ITER = plain("iter", ROSE, 0.3)
-try:
-    b = M_ITER.node_tree.nodes["Principled BSDF"]
-    b.inputs["Emission Color"].default_value = ROSE
-    b.inputs["Emission Strength"].default_value = 0.8
-except KeyError:
-    pass
-for k, (x, y) in enumerate(climb1 + climb2):
-    add_sphere((x, y, hz_at(x, y) + 0.09), 0.10, M_ITER, f"iter{k}")
-
-# QA tunnel straight through the translucent local hill
-qa_z = hz_at(-2.4, -0.1) - 0.45
-tube_from_points("qa_tunnel", [(-4.1, -0.35, qa_z), (-1.05, -0.25, qa_z)], 0.038,
-                 glow("qa_m", ROSE, 2.6))
-bpy.ops.mesh.primitive_cone_add(radius1=0.085, depth=0.18,
-                                location=(-0.95, -0.245, qa_z),
-                                rotation=(0, math.radians(90), 0))
-qa_tip = bpy.context.object
-qa_tip.data.materials.append(glow("qa_tip_m", ROSE, 2.6))
-
-# ---------------------------------------------------------------- flag at the global maximum
-peak = (2.6, 0.6, hz_at(2.6, 0.6))
-pole_h = 1.35
-pole_x = peak[0] + 0.30
-M_POLE = plain("pole", srgb("#3a4456"), 0.35, 0.6)
-add_cyl((pole_x, peak[1], peak[2] + pole_h / 2 - 0.05), 0.024, pole_h, M_POLE, name="pole")
-add_sphere((pole_x, peak[1], peak[2] + pole_h - 0.05), 0.04, M_POLE, name="pole_top")
-fw, fh = 0.86, 0.46
-fverts, ffaces = [], []
-FN = 16
-for j in range(2):
-    for i in range(FN + 1):
-        u = i / FN
-        fverts.append((pole_x + 0.02 + u * fw,
-                       peak[1] + 0.08 * math.sin(2.6 * u * math.pi) * (0.3 + 0.7 * u),
-                       peak[2] + pole_h - 0.09 - j * fh - 0.05 * u))
-for i in range(FN):
-    ffaces.append((i, i + 1, FN + 2 + i, FN + 1 + i))
-M_FLAG = plain("flag", srgb("#e8415f"), 0.55)
-try:
-    b = M_FLAG.node_tree.nodes["Principled BSDF"]
-    b.inputs["Emission Color"].default_value = srgb("#e8415f")
-    b.inputs["Emission Strength"].default_value = 0.5
-except KeyError:
-    pass
-make_mesh("flag", fverts, ffaces, M_FLAG)
-try:
-    font_b = bpy.data.fonts.load("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf")
-except Exception:
-    font_b = None
-tcurve = bpy.data.curves.new("flagtext", type="FONT")
-tcurve.body = "∇f = 0"
-if font_b:
-    tcurve.font = font_b
-tcurve.size = 0.19
-tcurve.align_x = "CENTER"
-tob = bpy.data.objects.new("flagtext", tcurve)
-tob.location = (pole_x + 0.02 + fw / 2, peak[1] - 0.10, peak[2] + pole_h - 0.39)
-tob.rotation_euler = (math.radians(90), 0, 0)
-tob.data.materials.append(glow("flagtext_m", IVORY, 1.6))
-tob.visible_shadow = False
-scene.collection.objects.link(tob)
-
-# ---------------------------------------------------------------- chibi 老師 (modeled on the dop.nycu.edu.tw portrait)
-cx, cy = 2.14, 0.42
-cz = hz_at(cx, cy)
-M_SUIT = plain("suit", NAVY, 0.75)
-M_HAIR = plain("hair", INK, 0.6)
-M_SKIN = plain("skin", SKIN, 0.65)
-try:
-    b = M_SKIN.node_tree.nodes["Principled BSDF"]
-    b.inputs["Subsurface Weight"].default_value = 0.25
-    b.inputs["Subsurface Radius"].default_value = (0.05, 0.02, 0.015)
-except KeyError:
-    pass
-M_IVORYP = plain("ivoryp", IVORY, 0.8)
-M_TIE = plain("tie", TIE, 0.6)
-try:
-    b = M_TIE.node_tree.nodes["Principled BSDF"]
-    b.inputs["Emission Color"].default_value = TIE
-    b.inputs["Emission Strength"].default_value = 0.15
-except KeyError:
-    pass
-M_INKP = plain("inkp", INK, 0.45)
-M_MOUTH = plain("mouth", srgb("#8a4a4a"), 0.6)
-M_BLUSH = plain("blush", srgb("#f28fa2"), 1.0)
-
-# legs + shoes
-add_capsule((cx - 0.085, cy, cz + 0.05), (cx - 0.085, cy, cz + 0.22), 0.048, M_SUIT, "legL")
-add_capsule((cx + 0.085, cy, cz + 0.05), (cx + 0.085, cy, cz + 0.22), 0.048, M_SUIT, "legR")
-add_sphere((cx - 0.085, cy - 0.025, cz + 0.035), 0.07, M_INKP, name="shoeL", scale=(1.0, 1.45, 0.62))
-add_sphere((cx + 0.085, cy - 0.025, cz + 0.035), 0.07, M_INKP, name="shoeR", scale=(1.0, 1.45, 0.62))
-# body
-add_sphere((cx, cy, cz + 0.42), 0.21, M_SUIT, name="body", scale=(0.95, 0.82, 1.22))
-add_sphere((cx, cy - 0.170, cz + 0.53), 0.055, M_IVORYP, name="shirt", scale=(0.9, 0.30, 1.15))
-add_sphere((cx, cy - 0.185, cz + 0.455), 0.024, M_TIE, name="tie", scale=(0.9, 0.40, 2.3))
-# arms: left raised cheer, right grips pole
-shoulderL = (cx - 0.185, cy, cz + 0.585)
-elbowL = (cx - 0.30, cy - 0.02, cz + 0.68)
-handL = (cx - 0.345, cy - 0.03, cz + 0.82)
-add_capsule(shoulderL, elbowL, 0.045, M_SUIT, "armL_upper")
-add_capsule(elbowL, handL, 0.041, M_SUIT, "armL_fore")
-add_sphere(handL, 0.058, M_SKIN, name="handL")
-shoulderR = (cx + 0.185, cy, cz + 0.585)
-elbowR = (cx + 0.32, cy + 0.02, cz + 0.64)
-handR = (pole_x, peak[1], cz + 0.72)
-add_capsule(shoulderR, elbowR, 0.045, M_SUIT, "armR_upper")
-add_capsule(elbowR, handR, 0.041, M_SUIT, "armR_fore")
-add_sphere(handR, 0.058, M_SKIN, name="handR")
-# head
-hz = cz + 0.98
-add_sphere((cx, cy, hz), 0.295, M_SKIN, name="head")
-# hair: cap + swept wispy bangs (per the portrait) + side pieces over the ears
-add_sphere((cx, cy + 0.10, hz + 0.075), 0.302, M_HAIR, name="haircap", scale=(1.03, 1.0, 0.95))
-bang_y = cy - 0.225
-bangs = [
-    # (x, z, rot_y_deg, len_scale, r)
-    (-0.19, 0.150, 30, 1.05, 0.058),
-    (-0.105, 0.180, 16, 1.15, 0.062),
-    (0.0, 0.192, 3, 1.20, 0.064),
-    (0.10, 0.180, -12, 1.15, 0.062),
-    (0.185, 0.148, -28, 1.05, 0.058),
-    (0.245, 0.108, -45, 0.95, 0.052),
-]
-for k, (bx_, bz_, rdeg, ls, br) in enumerate(bangs):
-    add_sphere((cx + bx_, bang_y, hz + bz_), br, M_HAIR, name=f"bang{k}",
-               scale=(0.70, 0.50, ls), rot=(0, math.radians(rdeg), 0))
-add_sphere((cx - 0.275, cy + 0.02, hz - 0.02), 0.06, M_HAIR, name="sideL", scale=(0.55, 0.8, 1.7))
-add_sphere((cx + 0.275, cy + 0.02, hz - 0.02), 0.06, M_HAIR, name="sideR", scale=(0.55, 0.8, 1.7))
-# rectangular glasses (per the portrait): wide flat frames
-for sgn in (-1, 1):
-    bpy.ops.mesh.primitive_torus_add(major_radius=0.080, minor_radius=0.009,
-                                     location=(cx + sgn * 0.115, cy - 0.283, hz + 0.015),
-                                     rotation=(math.radians(90), 0, 0),
-                                     major_segments=64, minor_segments=16)
+def add_cone_step(p, q, r, depth, mat, name):
+    d = Vector(q) - Vector(p)
+    mid = (Vector(p) + Vector(q)) / 2
+    bpy.ops.mesh.primitive_cone_add(radius1=r, depth=depth, location=mid)
     ob = bpy.context.object
-    ob.scale = (1.28, 1.0, 0.68)
-    ob.data.materials.append(M_INKP)
-    bpy.ops.object.shade_smooth()
-add_cyl((cx, cy - 0.296, hz + 0.03), 0.0072, 0.055, M_INKP, rot=(0, math.radians(90), 0), name="bridge")
-for sgn in (-1, 1):
-    add_capsule((cx + sgn * 0.215, cy - 0.262, hz + 0.02),
-                (cx + sgn * 0.285, cy - 0.05, hz + 0.035), 0.0065, M_INKP, f"temple{sgn}")
-# eyes + catchlight
-M_CATCH = glow("catch", IVORY, 1.2)
-for sgn in (-1, 1):
-    add_sphere((cx + sgn * 0.113, cy - 0.278, hz + 0.006), 0.032, M_INKP, name=f"eye{sgn}")
-    add_sphere((cx + sgn * 0.113 + 0.009, cy - 0.306, hz + 0.017), 0.006, M_CATCH, name=f"catch{sgn}")
-# brows
-for sgn in (-1, 1):
-    add_capsule((cx + sgn * 0.152, cy - 0.270, hz + 0.102),
-                (cx + sgn * 0.078, cy - 0.280, hz + 0.118), 0.0082, M_INKP, f"brow{sgn}")
-# smile
-smile_pts = [(cx - 0.055, cy - 0.284, hz - 0.117), (cx - 0.02, cy - 0.295, hz - 0.135),
-             (cx + 0.02, cy - 0.295, hz - 0.135), (cx + 0.055, cy - 0.284, hz - 0.117)]
-tube_from_points("smile", smile_pts, 0.010, M_MOUTH)
-# blush
-add_sphere((cx - 0.180, cy - 0.248, hz - 0.075), 0.040, M_BLUSH, name="blushL", scale=(0.85, 0.25, 0.5))
-add_sphere((cx + 0.180, cy - 0.248, hz - 0.075), 0.040, M_BLUSH, name="blushR", scale=(0.85, 0.25, 0.5))
+    ob.name = name
+    ob.rotation_euler = d.to_track_quat("Z", "Y").to_euler()
+    ob.data.materials.append(mat)
+    return ob
+
+# --- steepest descent (gold): clean step-by-step ascent of the east flank
+sd_xy = [(6.4, -1.1), (5.7, -0.7), (5.0, -0.35), (4.3, -0.02), (3.65, 0.25), (3.1, 0.45), (2.78, 0.56)]
+sd_pts = [(x, y, hz_at(x, y) + 0.05) for x, y in sd_xy]
+beam("sd_path", sd_pts, srgb("#43d97c"), core_r=0.012, halo_r=0.045, core_s=9.0,
+     halo_s=1.1, core_color=srgb("#dfffe9"))
+M_STEP = glow("sd_step", srgb("#b6f7c8"), 5.0)
+for k in range(len(sd_pts) - 1):
+    pa = (sd_xy[k][0], sd_xy[k][1], hz_at(*sd_xy[k]) + 0.07)
+    pb = (sd_xy[k + 1][0], sd_xy[k + 1][1], hz_at(*sd_xy[k + 1]) + 0.07)
+    mid = ((pa[0] + pb[0]) / 2, (pa[1] + pb[1]) / 2, (pa[2] + pb[2]) / 2)
+    add_cone_step(mid, pb, 0.065, 0.16, M_STEP, f"sd_step{k}")
+
+# --- simulated annealing (light rose): wandering walk, then the hop over the saddle
+sa_xy = [(-6.0, -1.3), (-5.3, -0.95), (-4.7, -1.15), (-4.1, -0.6), (-3.5, -0.85),
+         (-3.0, -0.35), (-2.4, -0.1)]
+sa_pts = [(x, y, hz_at(x, y) + 0.05) for x, y in sa_xy]
+for t in [i / 12 for i in range(1, 12)]:
+    x = -2.4 + t * 2.9
+    y = -0.1 + t * 0.45
+    base = hz_at(-2.4, -0.1) * (1 - t) + hz_at(0.5, 0.35) * t
+    sa_pts.append((x, y, base + 0.95 * math.sin(math.pi * t) + 0.08))
+for x, y in [(0.5, 0.35), (1.1, 0.42), (1.7, 0.5), (2.25, 0.57)]:
+    sa_pts.append((x, y, hz_at(x, y) + 0.05))
+SA_ROSE = srgb("#ff7060")
+beam("sa_path", sa_pts, SA_ROSE, core_r=0.013, halo_r=0.045, core_s=9.0,
+     halo_s=1.1, core_color=srgb("#ffe0da"))
+M_SAPT = plain("sa_pt", SA_ROSE, 0.4)
+try:
+    b = M_SAPT.node_tree.nodes["Principled BSDF"]
+    b.inputs["Emission Color"].default_value = SA_ROSE
+    b.inputs["Emission Strength"].default_value = 1.6
+except KeyError:
+    pass
+for k, (x, y) in enumerate(sa_xy):
+    add_sphere((x, y, hz_at(x, y) + 0.08), 0.07, M_SAPT, f"sa_pt{k}")
+
+# --- QA (blue): tunnelling straight from the local hill into the global hill
+qa_z = hz_at(-2.4, -0.1) - 0.35
+qa_a = (-2.75, -0.15, qa_z)
+qa_b = (1.95, 0.42, qa_z)
+beam("qa_beam", [qa_a, qa_b], srgb("#4a9eff"),
+     core_r=0.012, halo_r=0.05, core_s=10.0, halo_s=1.2, core_color=srgb("#d6e8ff"))
+_d = (Vector(qa_b) - Vector(qa_a)).normalized()
+bpy.ops.mesh.primitive_cone_add(radius1=0.085, depth=0.18,
+                                location=(qa_b[0] + _d.x * 0.09, qa_b[1] + _d.y * 0.09, qa_z))
+qa_tip = bpy.context.object
+qa_tip.rotation_euler = _d.to_track_quat("Z", "Y").to_euler()
+qa_tip.data.materials.append(glow("qa_tip_m", srgb("#4a9eff"), 3.0))
+
+# ---------------------------------------------------------------- global maximum marker
+# (the anime-style 老師 figure and the ∇f = 0 flag are drawn as a 2D layer at
+# compose time — see figs_src/cover_compose.py)
+peak = (2.6, 0.6, hz_at(2.6, 0.6))
+add_sphere((peak[0], peak[1], peak[2] + 0.10), 0.11, glow("opt_marker", IVORY, 6.0), name="opt_marker")
+mark_h = add_sphere((peak[0], peak[1], peak[2] + 0.10), 0.22,
+                    halo_material("opt_halo", IVORY, 1.0), name="opt_halo")
+mark_h.visible_shadow = False
 
 # ---------------------------------------------------------------- world, lights, haze
 world = bpy.data.worlds.new("world")
@@ -545,19 +625,69 @@ scene.world = world
 world.use_nodes = True
 wnt = world.node_tree
 bg = wnt.nodes["Background"]
-grad = wnt.nodes.new("ShaderNodeTexGradient")
-mapn = wnt.nodes.new("ShaderNodeMapping")
 texco = wnt.nodes.new("ShaderNodeTexCoord")
+mapn = wnt.nodes.new("ShaderNodeMapping")
 mapn.inputs["Rotation"].default_value = (0, math.radians(-90), 0)
 wnt.links.new(texco.outputs["Generated"], mapn.inputs["Vector"])
+# vertical base gradient: near-black with a faint indigo horizon
+grad = wnt.nodes.new("ShaderNodeTexGradient")
 wnt.links.new(mapn.outputs["Vector"], grad.inputs["Vector"])
-ramp = wnt.nodes.new("ShaderNodeValToRGB")
-ramp.color_ramp.elements[0].position = 0.0
-ramp.color_ramp.elements[0].color = srgb("#0d1626")   # horizon: deep blue glow
-ramp.color_ramp.elements[1].position = 1.0
-ramp.color_ramp.elements[1].color = srgb("#04060c")   # zenith: near black
-wnt.links.new(grad.outputs["Fac"], ramp.inputs["Fac"])
-wnt.links.new(ramp.outputs["Color"], bg.inputs["Color"])
+base = wnt.nodes.new("ShaderNodeValToRGB")
+base.color_ramp.elements[0].position = 0.0
+base.color_ramp.elements[0].color = srgb("#0a0820")
+base.color_ramp.elements[1].position = 1.0
+base.color_ramp.elements[1].color = srgb("#030207")
+wnt.links.new(grad.outputs["Fac"], base.inputs["Fac"])
+# wispy nebula filaments (blue with purple/magenta accents)
+neb_noise = wnt.nodes.new("ShaderNodeTexNoise")
+neb_noise.inputs["Scale"].default_value = 1.15
+neb_noise.inputs["Detail"].default_value = 8.0
+neb_noise.inputs["Roughness"].default_value = 0.68
+wnt.links.new(texco.outputs["Generated"], neb_noise.inputs["Vector"])
+neb = wnt.nodes.new("ShaderNodeValToRGB")
+neb.color_ramp.elements[0].position = 0.42
+neb.color_ramp.elements[0].color = (0, 0, 0, 1)
+neb.color_ramp.elements[1].position = 0.95
+neb.color_ramp.elements[1].color = srgb("#5c3a78")
+for pos, col in [(0.58, "#10173f"), (0.72, "#241a55"), (0.84, "#3d2a68")]:
+    el = neb.color_ramp.elements.new(pos)
+    el.color = srgb(col)
+wnt.links.new(neb_noise.outputs["Fac"], neb.inputs["Fac"])
+mix1 = wnt.nodes.new("ShaderNodeMixRGB"); mix1.blend_type = "ADD"
+mix1.inputs["Fac"].default_value = 0.38
+wnt.links.new(base.outputs["Color"], mix1.inputs[1])
+wnt.links.new(neb.outputs["Color"], mix1.inputs[2])
+# two-layer procedural starfield
+def star_layer(scale, thresh, power, gain):
+    vor = wnt.nodes.new("ShaderNodeTexVoronoi")
+    vor.inputs["Scale"].default_value = scale
+    vor.inputs["Randomness"].default_value = 1.0
+    wnt.links.new(texco.outputs["Generated"], vor.inputs["Vector"])
+    lt = wnt.nodes.new("ShaderNodeMath"); lt.operation = "LESS_THAN"
+    lt.inputs[1].default_value = thresh
+    wnt.links.new(vor.outputs["Distance"], lt.inputs[0])
+    bw = wnt.nodes.new("ShaderNodeRGBToBW")
+    wnt.links.new(vor.outputs["Color"], bw.inputs["Color"])
+    pw = wnt.nodes.new("ShaderNodeMath"); pw.operation = "POWER"
+    pw.inputs[1].default_value = power
+    wnt.links.new(bw.outputs["Val"], pw.inputs[0])
+    m1 = wnt.nodes.new("ShaderNodeMath"); m1.operation = "MULTIPLY"
+    wnt.links.new(lt.outputs[0], m1.inputs[0])
+    wnt.links.new(pw.outputs[0], m1.inputs[1])
+    m2 = wnt.nodes.new("ShaderNodeMath"); m2.operation = "MULTIPLY"
+    m2.inputs[1].default_value = gain
+    wnt.links.new(m1.outputs[0], m2.inputs[0])
+    return m2
+s1 = star_layer(300.0, 0.09, 4.0, 16.0)   # dense faint stars
+s2 = star_layer(90.0, 0.05, 6.0, 40.0)    # sparse bright stars
+sadd = wnt.nodes.new("ShaderNodeMath"); sadd.operation = "ADD"
+wnt.links.new(s1.outputs[0], sadd.inputs[0])
+wnt.links.new(s2.outputs[0], sadd.inputs[1])
+starcol = wnt.nodes.new("ShaderNodeMixRGB"); starcol.blend_type = "ADD"
+wnt.links.new(sadd.outputs[0], starcol.inputs["Fac"])
+wnt.links.new(mix1.outputs["Color"], starcol.inputs[1])
+starcol.inputs[2].default_value = (0.92, 0.95, 1.0, 1.0)
+wnt.links.new(starcol.outputs["Color"], bg.inputs["Color"])
 bg.inputs["Strength"].default_value = 1.0
 
 # cool cyan rim from back-left
@@ -567,12 +697,12 @@ rimL.data.energy = 900
 rimL.data.size = 9
 rimL.data.color = (0.45, 0.85, 1.0)
 rimL.rotation_euler = (math.radians(-55), 0, math.radians(-140))
-# warm gold rim from back-right
+# magenta rim from back-right (graphene-reference duotone)
 bpy.ops.object.light_add(type="AREA", location=(9, 7, 4.5))
 rimR = bpy.context.object
-rimR.data.energy = 700
+rimR.data.energy = 750
 rimR.data.size = 8
-rimR.data.color = (1.0, 0.78, 0.5)
+rimR.data.color = (0.85, 0.45, 1.0)
 rimR.rotation_euler = (math.radians(-58), 0, math.radians(140))
 # soft front key so the character face reads
 bpy.ops.object.light_add(type="AREA", location=(0.5, -9, 4.5))
@@ -582,13 +712,13 @@ key.data.size = 7
 key.data.color = (0.95, 0.96, 1.0)
 key.rotation_euler = (math.radians(58), 0, 0)
 
-# warm fill dedicated to the character's face
-bpy.ops.object.light_add(type="AREA", location=(1.4, -2.8, 5.6))
-cfill = bpy.context.object
-cfill.data.energy = 130
-cfill.data.size = 3
-cfill.data.color = (1.0, 0.9, 0.8)
-cfill.rotation_euler = (math.radians(48), 0, math.radians(-8))
+# soft wash for the background exemplars
+bpy.ops.object.light_add(type="AREA", location=(0, 3.5, 9))
+bwash = bpy.context.object
+bwash.data.energy = 380
+bwash.data.size = 12
+bwash.data.color = (0.85, 0.88, 1.0)
+bwash.rotation_euler = (math.radians(-38), 0, 0)
 
 # gentle haze for neon glow
 bpy.ops.mesh.primitive_cube_add(size=1, location=(0, 2.5, 2.2))
@@ -600,32 +730,32 @@ hnt = hm.node_tree
 hnt.nodes.clear()
 hout = hnt.nodes.new("ShaderNodeOutputMaterial")
 vol = hnt.nodes.new("ShaderNodeVolumeScatter")
-vol.inputs["Density"].default_value = 0.006
-vol.inputs["Anisotropy"].default_value = 0.45
+vol.inputs["Density"].default_value = 0.009
+vol.inputs["Anisotropy"].default_value = 0.5
 hnt.links.new(vol.outputs["Volume"], hout.inputs["Volume"])
 haze.data.materials.append(hm)
 haze.display_type = "WIRE"
 
 # ---------------------------------------------------------------- camera
-bpy.ops.object.camera_add(location=(0.0, -13.6, 6.0))
+bpy.ops.object.camera_add(location=(0.0, -13.0, 9.0))
 cam = bpy.context.object
 scene.camera = cam
 cam.data.lens = 40
 cam.data.dof.use_dof = True
 cam.data.dof.aperture_fstop = 3.5
 target = bpy.data.objects.new("target", None)
-target.location = (0.3, 1.0, 1.75)
+target.location = (0.3, 1.6, 2.4)
 scene.collection.objects.link(target)
 tc = cam.constraints.new(type="TRACK_TO")
 tc.target = target
 tc.track_axis = "TRACK_NEGATIVE_Z"
 tc.up_axis = "UP_Y"
-cam.data.dof.focus_object = bpy.data.objects["head"]
+cam.data.dof.focus_object = bpy.data.objects["opt_marker"]
 if CLOSEUP:
-    cam.location = (cx - 0.5, cy - 2.6, cz + 1.15)
+    cam.location = (peak[0] - 0.5, peak[1] - 3.2, peak[2] + 1.0)
     cam.data.lens = 80
     cam.data.dof.aperture_fstop = 8.0
-    target.location = (cx + 0.15, cy, cz + 0.85)
+    target.location = (peak[0], peak[1], peak[2] + 0.3)
 
 # ---------------------------------------------------------------- render
 scene.render.engine = "CYCLES"

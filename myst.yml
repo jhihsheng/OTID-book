@@ -12,6 +12,7 @@ project:
   exclude:
     - CLAUDE.md
   toc:
+    - file: cover.md
     - file: intro.md
     - file: syllabus.md
     - file: resources.md

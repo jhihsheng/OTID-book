@@ -1,7 +1,8 @@
 /* 依 em 的 myfile.css 移植配色與字型（藍本：jhihsheng.github.io/em/_static/myfile.css）
    em 三要素：象牙白底 rgb(255,252,242)／Tangerine＋標楷體標題（帶陰影）／深灰黑側欄（桃紅連結、綠 hover）
    v3：側欄黑底與頁尾淺鋼藍與 light/dark 主題無關硬鎖（2026-07-23 老師裁定）
-   v4：側欄底部（Made with MyST 區）補黑；隱藏 Edit this page 鈕（2026-07-23 老師裁定） */
+   v4：側欄底部（Made with MyST 區）補黑；隱藏 Edit this page 鈕（2026-07-23 老師裁定）
+   v5：封面頁滿版顯示（cover.md 的 .cover-full 圖；2026-07-29 老師要求封面獨立一頁近全螢幕） */
 @import url('https://fonts.googleapis.com/css2?family=Tangerine:wght@400;700&display=swap');
 
 /* ---- 主體：象牙白底（僅亮色模式；深色模式保留主題預設） ---- */
@@ -65,3 +66,14 @@ footer.footer .myst-footer-link {
   background-color: rgba(255, 255, 255, 0.35) !important;
 }
 footer p { margin: 0.4rem 0; }
+
+/* ---- 封面頁（cover.md）：圖佔滿可視範圍，其餘內容置中 ---- */
+img.cover-full {
+  display: block;
+  width: 100%;
+  max-height: 92vh;
+  object-fit: contain;
+  margin: 0 auto;
+}
+article:has(img.cover-full) { padding-top: 0.5rem; }
+article:has(img.cover-full) p { text-align: center; }

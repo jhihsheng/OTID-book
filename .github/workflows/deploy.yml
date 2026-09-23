@@ -47,6 +47,10 @@ jobs:
           for f in _build/html/sitemap.xml _build/html/robots.txt; do
             if [ -f "$f" ]; then sed -i "s|http://localhost:3000|${SITE_URL}|g" "$f"; fi
           done
+      - name: Fix site-part widget URLs   # mystmd 未替 footer.md 等 site part 的 {anywidget} esm 加 BASE_URL/build 前綴（檔案實際在 /build/）
+        run: |
+          grep -rlZ --include='*.html' --include='*.json' --include='*.js' '"esm' _build/html \
+            | xargs -0 -r sed -i "s#\(\"esm\\\\\{0,1\}\":\\\\\{0,1\}\"\)/\([^\"\\\\/]*\.mjs\)#\1${BASE_URL}/build/\2#g"
       - uses: actions/upload-pages-artifact@v5
         with:
           path: _build/html

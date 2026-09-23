@@ -43,7 +43,7 @@ main h1, main h2, main h3, main h4, main h5, main h6 {
 .myst-toc > a.font-bold,
 .myst-toc > a.font-bold:hover { color: ivory; }        /* 站名（仿 em site-logo ivory） */
 .myst-toc svg { color: ivory !important; }             /* 展開箭頭 */
-.myst-toc div.myst-toc-heading { color: ivory !important; }  /* Part I／II 等無連結標題（主題在當前 Part 會套 text-blue-800） */
+.myst-primary-sidebar .myst-toc-item > div { color: ivory !important; }  /* Part I／II 等無連結標題（是 div 非 a；主題在當前 Part 會套深藍 text-* class） */
 .myst-primary-sidebar-nav .myst-toc-item:hover,
 .myst-primary-sidebar-nav .myst-toc-item a:focus {
   background-color: rgba(255, 255, 255, 0.08);

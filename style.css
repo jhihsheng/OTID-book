@@ -2,7 +2,8 @@
    em 三要素：象牙白底 rgb(255,252,242)／Tangerine＋標楷體標題（帶陰影）／深灰黑側欄（桃紅連結、綠 hover）
    v3：側欄黑底與頁尾淺鋼藍與 light/dark 主題無關硬鎖（2026-07-23 老師裁定）
    v4：側欄底部（Made with MyST 區）補黑；隱藏 Edit this page 鈕（2026-07-23 老師裁定）
-   v5：封面頁滿版顯示（cover.md 的 .cover-full 圖；2026-07-29 老師要求封面獨立一頁近全螢幕） */
+   v5：封面頁滿版顯示（cover.md 的 .cover-full 圖；2026-07-29 老師要求封面獨立一頁近全螢幕）
+   v6：封面頁不顯示左側欄；閱讀模式按鈕（assets/reading_mode.mjs；2026-09-23 老師要求） */
 @import url('https://fonts.googleapis.com/css2?family=Tangerine:wght@400;700&display=swap');
 
 /* ---- 主體：象牙白底（僅亮色模式；深色模式保留主題預設） ---- */
@@ -77,3 +78,30 @@ img.cover-full {
 }
 article:has(img.cover-full) { padding-top: 0.5rem; }
 article:has(img.cover-full) p { text-align: center; }
+
+/* ---- 閱讀模式（assets/reading_mode.mjs 在 <html> 加 .otid-reading）：藏目錄欄與大綱，只留內文 ---- */
+@media (min-width: 1280px) {
+  html.otid-reading .myst-primary-sidebar { display: none !important; }
+}
+html.otid-reading .myst-outline { display: none !important; }
+
+#otid-reading-toggle {
+  position: fixed;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  z-index: 40;
+  padding: 0.45rem 0.9rem;
+  border-radius: 9999px;
+  border: 1px solid #555;
+  background-color: rgb(30, 30, 30);   /* 與側欄同色 */
+  color: ivory;
+  font-size: 0.875rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  opacity: 0.85;
+}
+#otid-reading-toggle:hover { opacity: 1; color: #66cc94; }
+#otid-reading-toggle:focus-visible { outline: 2px solid #66cc94; outline-offset: 2px; }
+@media (max-width: 1023.98px) {
+  #otid-reading-toggle { display: none; }   /* 窄螢幕側欄本來就收在漢堡選單裡 */
+}

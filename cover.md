@@ -1,6 +1,7 @@
 ---
 title: 封面
 site:
+  hide_toc: true
   hide_title_block: true
   hide_outline: true
   hide_footer_links: true
